@@ -56,15 +56,33 @@ class Model:
         self.T_feed = self.calculate_T_feed()
 
         # initialize T and K for all stages at feed temperature
-        self.T = self.T_feed * np.ones(self.N + 1)
+        self.T_old = self.T_feed * np.ones(self.N + 1)
+        self.T_new = self.T_feed * np.ones(self.N + 1)
         self.K = {
             key: self.K_func[key].eval_SI(self.T_feed, self.P_feed)*np.ones(self.N + 1) for key in self.components
         }
 
+        # solver parameters
+        self.df = 1.  # Dampening factor to prevent excessive oscillation of temperatures
+
     def run(self, num_iter=1):
         self.initialize_CMO()
-        for i in range(num_iter):
+        for i in range(1, num_iter + 1):
             self.solve()
+            if self.temperature_is_converged():
+                print('temperature converged in %i iterations' % i)
+                return
+
+        print('temperature did not converge in %i iterations' % num_iter)
+
+    def temperature_is_converged(self):
+        tol = 1e-2
+        eps = np.abs(self.T_new - self.T_old)
+        if eps.max() < tol:
+            return True
+
+        self.T_old = self.T_new[:]
+        return False
 
     def calculate_T_feed(self):
         """Feed mixture is saturated liquid. Calculate T_feed with bubble point calculation"""
@@ -93,25 +111,37 @@ class Model:
         # update from old calculations
         for i in range(self.N + 1):
             # update L
-            self.L[i] = sum(l[c][i] for c in self.components)
+            # self.L[i] = sum(l[c][i] for c in self.components)
 
             # update mole fractions
             for c in self.components:
-                self.x[c][i] = l[c][i]/self.L[i]
+                self.x[c][i] = l[c][i]/sum(l[c][i] for c in self.components)
 
             # calculate stage temperature now that all liquid-phase mole fractions are known
             K_vals = [self.K_func[c].eval_SI for c in self.components]
             x_vals = [self.x[c][i] for c in self.components]
-            self.T[i] = bubble_point(x_vals, K_vals, self.P_feed, self.T[i])
+            self.T_new[i] = self.T_old[i] + self.df * (
+                    bubble_point(x_vals, K_vals, self.P_feed, self.T_old[i]) - self.T_old[i]
+            )
             for c in self.components:
                 # update K
-                self.K[c][i] = self.K_func[c].eval_SI(self.T[i], self.P_feed)
+                self.K[c][i] = self.K_func[c].eval_SI(self.T_old[i], self.P_feed)
                 # update y
                 self.y[c][i] = self.K[c][i]*self.x[c][i]
 
         # calculate V from overall mass balance at each equilibrium stage
-        self.V[self.N] = self.L[self.N-1] - self.B
-        for i in range(self.N-1, 1):
-            self.V[i] = self.L[i-1] + self.V[i + 1] + self.F[i] - self.L[i]
-        self.V[1] = self.B + self.L[0]
-        self.V[0] = 0. # total condenser
+        # self.V[self.N] = self.L[self.N-1] - self.B
+        # for i in range(self.N-1, 1):
+        #     self.V[i] = self.L[i-1] + self.V[i + 1] + self.F[i] - self.L[i]
+        # self.V[1] = self.B + self.L[0]
+        # self.V[0] = 0. # total condenser
+
+
+if __name__ == '__main__':
+    cls = Model(
+        ['n-Butane', 'n-Pentane', 'n-Octane'],
+        1000., 101325. * 2,
+        [0.2, 0.35, 0.45],
+        1.5, 550., 3, 2
+    )
+    cls.run(num_iter=10)

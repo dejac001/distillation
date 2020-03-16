@@ -37,7 +37,7 @@ class MyTestCase(unittest.TestCase):
             self.assertLess(np.linalg.norm(cls.y[key]-y_Wankat[key]), 1.5)
             self.assertLess(np.linalg.norm(cls.x[key]-x_Wankat[key]), 1.52)
 
-        self.assertLess(np.linalg.norm(T_Wankat-cls.T), 1.)
+        self.assertLess(np.linalg.norm(T_Wankat - cls.T_old), 1.)
 
 
 if __name__ == '__main__':
