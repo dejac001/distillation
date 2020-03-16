@@ -16,5 +16,5 @@ def bubble_point(x, K, p, T_guess):
     :return: Temperature at which the liquid mixture begins to boil.
     """
     from scipy.optimize import root_scalar
-    sol = root_scalar(residual, args=(x, K, p), x0=T_guess-10, x1=T_guess+10)  #, method='newton')
+    sol = root_scalar(residual, args=(x, K, p), x0=T_guess-10, x1=T_guess+10)
     return sol.root
