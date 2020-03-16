@@ -1,6 +1,6 @@
-def read_chart():
+def read_chart(f_name):
     data = {}
-    with open('../equilibrium_data/depriester.csv', 'r') as f:
+    with open(f_name, 'r') as f:
         header = next(f).split(',')
         for line in f:
             compound, *vals = line.split(',')
@@ -12,8 +12,8 @@ def read_chart():
 
 
 class DePriester:
-    def __init__(self, compound):
-        data = read_chart()
+    def __init__(self, compound, f_name):
+        data = read_chart(f_name)
         assert compound in data.keys(), 'Compound not found!'
         my_data = data[compound]
 
