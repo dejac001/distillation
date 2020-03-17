@@ -1,0 +1,265 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>4. Amundson_1958 &mdash; distillation 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="5. bubble_point" href="bubble.html" />
+    <link rel="prev" title="3. Material and Energy Balances" href="balances.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> distillation
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">1. About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="balances.html">3. Material and Energy Balances</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Amundson_1958</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bubble.html">5. bubble_point</a></li>
+<li class="toctree-l1"><a class="reference internal" href="equil.html">6. equilibrium_data</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">distillation</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li><span class="section-number">4. </span>Amundson_1958</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/amundson.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="amundson-1958">
+<h1><span class="section-number">4. </span>Amundson_1958<a class="headerlink" href="#amundson-1958" title="Permalink to this headline">¶</a></h1>
+<p>This approach <a class="reference internal" href="#amundson1958" id="id1"><span>[Amundson1958]</span></a> uses the following mathematical trick to
+efficiently solve multicomponent distillation problems.</p>
+<dl class="citation">
+<dt class="label" id="amundson1958"><span class="brackets"><a class="fn-backref" href="#id1">Amundson1958</a></span></dt>
+<dd><p>Amundson, NR and Pontinen, AJ. Multicomponent Distillation Calculations on a Large Digital Computer. <em>Ind. Eng. Chem.</em> 1958;50:730–736.</p>
+</dd>
+</dl>
+<div class="section" id="mathematical-trick">
+<h2><span class="section-number">4.1. </span>Mathematical Trick<a class="headerlink" href="#mathematical-trick" title="Permalink to this headline">¶</a></h2>
+<p>A system of equations such as</p>
+<div class="math notranslate nohighlight">
+\[Ax=b\]</div>
+<p>where <span class="math notranslate nohighlight">\(A\)</span> is a matrix of constants,
+<span class="math notranslate nohighlight">\(x\)</span> is a vector of unknowns,
+and <span class="math notranslate nohighlight">\(b\)</span> is a vector of constants,
+can be solved very efficiently if the matrix
+<span class="math notranslate nohighlight">\(A\)</span> can be made into the following form:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}A = \begin{bmatrix}
+    d_0 &amp; u_0 &amp; 0 &amp; 0 &amp; 0  \\
+    l_0 &amp; d_1 &amp; u_1 &amp; 0 &amp; 0 \\
+    0 &amp; l_1 &amp; d_2 &amp; u_2 &amp; 0  \\
+    0 &amp; 0 &amp; l_2 &amp; d_3 &amp; u_3  \\
+    0 &amp; 0 &amp;  0 &amp; l_3 &amp; d_4
+\end{bmatrix}\end{split}\]</div>
+<p>For example, if we define the following vectors</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+    l &amp;= [l_0, l_1, l_2, l_3] \\
+    d &amp;= [d_0, d_1, d_2, d_3, d_4] \\
+    u &amp;= [u_0, u_1, u_2, u_3] \\
+    b &amp;= [b_0, b_1, b_2, b_3]
+\end{align}\end{split}\]</div>
+<p>Using some code like</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="n">l_0</span><span class="p">,</span> <span class="n">l_1</span><span class="p">,</span> <span class="n">l_2</span><span class="p">,</span> <span class="n">l_3</span><span class="p">]</span>
+<span class="n">d</span> <span class="o">=</span> <span class="p">[</span><span class="n">d_0</span><span class="p">,</span> <span class="n">d_1</span><span class="p">,</span> <span class="n">d_2</span><span class="p">,</span> <span class="n">d_3</span><span class="p">,</span> <span class="n">d_4</span><span class="p">]</span>
+<span class="n">u</span> <span class="o">=</span> <span class="p">[</span><span class="n">u_0</span><span class="p">,</span> <span class="n">u_1</span><span class="p">,</span> <span class="n">u_2</span><span class="p">,</span> <span class="n">u_3</span><span class="p">]</span>
+<span class="n">b</span> <span class="o">=</span> <span class="p">[</span><span class="n">b_0</span><span class="p">,</span> <span class="n">b_1</span><span class="p">,</span> <span class="n">b_2</span><span class="p">,</span> <span class="n">b_3</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>the <span class="math notranslate nohighlight">\(5\times5\)</span> matrix can be solved
+efficiently using the following code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">linalg</span><span class="p">,</span> <span class="n">diags</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">diags</span><span class="p">(</span>
+    <span class="n">diagonals</span><span class="o">=</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">u</span><span class="p">],</span>
+    <span class="n">offsets</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">spsolve</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This mathematical trick is used throughout
+the solution algorithm.
+In fact, this approach <em>only</em> solves diagonal matrices.</p>
+<span class="target" id="module-distillation.amundson_1958"></span></div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="bubble.html" class="btn btn-neutral float-right" title="5. bubble_point" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="balances.html" class="btn btn-neutral float-left" title="3. Material and Energy Balances" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Robert F. DeJaco
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

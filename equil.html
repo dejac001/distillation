@@ -1,0 +1,266 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>6. equilibrium_data &mdash; distillation 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="5. bubble_point" href="bubble.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> distillation
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">1. About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="balances.html">3. Material and Energy Balances</a></li>
+<li class="toctree-l1"><a class="reference internal" href="amundson.html">4. Amundson_1958</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bubble.html">5. bubble_point</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">6. equilibrium_data</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">distillation</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li><span class="section-number">6. </span>equilibrium_data</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/equil.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-distillation.equilibrium_data">
+<span id="equilibrium-data"></span><h1><span class="section-number">6. </span>equilibrium_data<a class="headerlink" href="#module-distillation.equilibrium_data" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="sources-for-delta-h-mathrm-v-and-c-mathrm-p-l">
+<h2><span class="section-number">6.1. </span>Sources for <span class="math notranslate nohighlight">\(\Delta H_\mathrm{v}\)</span> and <span class="math notranslate nohighlight">\(C_{\mathrm{p,L}}\)</span><a class="headerlink" href="#sources-for-delta-h-mathrm-v-and-c-mathrm-p-l" title="Permalink to this headline">¶</a></h2>
+<p>The heats of vaporization and heat capacities of the liquid
+are obtained from <a class="reference internal" href="#perry" id="id1"><span>[Perry]</span></a></p>
+<span class="target" id="module-distillation.equilibrium_data.heat_capacity_liquid"></span><dl class="class">
+<dt id="distillation.equilibrium_data.heat_capacity_liquid.CpL">
+<em class="property">class </em><code class="sig-prename descclassname">distillation.equilibrium_data.heat_capacity_liquid.</code><code class="sig-name descname">CpL</code><span class="sig-paren">(</span><em class="sig-param">compound_name</em>, <em class="sig-param">f_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/equilibrium_data/heat_capacity_liquid.html#CpL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.equilibrium_data.heat_capacity_liquid.CpL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Heat capacities of liquids</p>
+<dl class="method">
+<dt id="distillation.equilibrium_data.heat_capacity_liquid.CpL.eval">
+<code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/equilibrium_data/heat_capacity_liquid.html#CpL.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.equilibrium_data.heat_capacity_liquid.CpL.eval" title="Permalink to this definition">¶</a></dt>
+<dd><p>return heat capacity liquid in J/kmol/K</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.equilibrium_data.heat_capacity_liquid.CpL.integral_dT">
+<code class="sig-name descname">integral_dT</code><span class="sig-paren">(</span><em class="sig-param">T_ref</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/equilibrium_data/heat_capacity_liquid.html#CpL.integral_dT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.equilibrium_data.heat_capacity_liquid.CpL.integral_dT" title="Permalink to this definition">¶</a></dt>
+<dd><div class="math notranslate nohighlight">
+\[\int_{Tref}^T CpL dT\]</div>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-distillation.equilibrium_data.heats_of_vaporization"></span><dl class="class">
+<dt id="distillation.equilibrium_data.heats_of_vaporization.dH_vap">
+<em class="property">class </em><code class="sig-prename descclassname">distillation.equilibrium_data.heats_of_vaporization.</code><code class="sig-name descname">dH_vap</code><span class="sig-paren">(</span><em class="sig-param">compound_name</em>, <em class="sig-param">f_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/equilibrium_data/heats_of_vaporization.html#dH_vap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.equilibrium_data.heats_of_vaporization.dH_vap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Heat of vaporization</p>
+</dd></dl>
+
+</div>
+<div class="section" id="sources-for-k-i-t">
+<h2><span class="section-number">6.2. </span>Sources for <span class="math notranslate nohighlight">\(K_i(T)\)</span><a class="headerlink" href="#sources-for-k-i-t" title="Permalink to this headline">¶</a></h2>
+<p>The equilibrium properties are taken from
+the DePriester charts in <a class="reference internal" href="#wankat" id="id2"><span>[Wankat]</span></a></p>
+<span class="target" id="module-distillation.equilibrium_data.depriester_charts"></span></div>
+<div class="section" id="source-of-c-mathrm-p-v">
+<h2><span class="section-number">6.3. </span>Source of <span class="math notranslate nohighlight">\(C_{\mathrm{p,V}}\)</span><a class="headerlink" href="#source-of-c-mathrm-p-v" title="Permalink to this headline">¶</a></h2>
+<p>The heat capacities of the vapor are currently estimated as a polyatomic ideal gas.</p>
+<span class="target" id="module-distillation.equilibrium_data.heat_capacity_vapor"></span><dl class="class">
+<dt id="distillation.equilibrium_data.heat_capacity_vapor.CpV">
+<em class="property">class </em><code class="sig-prename descclassname">distillation.equilibrium_data.heat_capacity_vapor.</code><code class="sig-name descname">CpV</code><a class="reference internal" href="_modules/distillation/equilibrium_data/heat_capacity_vapor.html#CpV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.equilibrium_data.heat_capacity_vapor.CpV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Heat capacities of vapor</p>
+</dd></dl>
+
+<dl class="citation">
+<dt class="label" id="perry"><span class="brackets"><a class="fn-backref" href="#id1">Perry</a></span></dt>
+<dd><p>Green, Don W., and Robert H. Perry. Perry’s Chemical Engineers’ Handbook (8th Edition), McGraw-Hill Professional Publishing, 2007. ProQuest Ebook Central,</p>
+</dd>
+<dt class="label" id="wankat"><span class="brackets"><a class="fn-backref" href="#id2">Wankat</a></span></dt>
+<dd><p>Wankat, P C. Separation Process Engineering (3rd Edition), Prentice Hall, 2012, p. 33</p>
+</dd>
+</dl>
+</div>
+<span class="target" id="module-distillation.solvers"></span><dl class="function">
+<dt id="distillation.solvers.solve_diagonal">
+<code class="sig-prename descclassname">distillation.solvers.</code><code class="sig-name descname">solve_diagonal</code><span class="sig-paren">(</span><em class="sig-param">lower</em>, <em class="sig-param">diag</em>, <em class="sig-param">upper</em>, <em class="sig-param">b</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/solvers.html#solve_diagonal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.solvers.solve_diagonal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solve matrix Ax=b when A is diagonal</p>
+</dd></dl>
+
+<span class="target" id="module-distillation.unit_conversions"></span></div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="bubble.html" class="btn btn-neutral float-left" title="5. bubble_point" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Robert F. DeJaco
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
