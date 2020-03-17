@@ -1,7 +1,11 @@
-.. include:: docs/source/about.rst
+.. toctree::
+   :maxdepth: 3
+   :titlesonly:
+   :hidden:
+   :caption: Contents:
 
-
-.. include:: docs/source/install.rst
+   docs/source/about.rst
+   docs/source/install.rst
 
 
 Documentation
