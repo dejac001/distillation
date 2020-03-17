@@ -1,11 +1,15 @@
-.. toctree::
-   :maxdepth: 3
-   :titlesonly:
-   :hidden:
-   :caption: Contents:
+Distillation
+============
+Perform a calculation for distillation of mixtures
+of chemical compounds.
 
-   docs/source/about.rst
-   docs/source/install.rst
+.. image:: ../../distillation/column_diagram.png
+    :width: 400
+    :align: center
+
+Currently only supports configurations with total condensers and partial reboilers.
+Equilibrium data currently only comes from DePriester charts
+and is assumed to only depend on pressure and temperature.
 
 
 Documentation
