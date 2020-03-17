@@ -3,7 +3,7 @@ Distillation
 Perform a calculation for distillation of mixtures
 of chemical compounds.
 
-.. image:: ../../distillation/column_diagram.png
+.. image:: distillation/column_diagram.png
     :width: 400
     :align: center
 
