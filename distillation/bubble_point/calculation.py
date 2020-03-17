@@ -4,10 +4,6 @@ def residual(T, x, K, p):
 
 def bubble_point(x, K, p, T_guess):
     """
-    Find the temperature that satisfies the stoichiometric equation
-
-    .. math::
-        \sum_i y_i = \sum_i K_i (T) x_i = 1.0
 
     :param x: mole fractions in liquid
     :param p: total pressure

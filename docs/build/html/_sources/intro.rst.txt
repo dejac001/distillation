@@ -1,0 +1,19 @@
+Distillation
+============
+
+Perform a calculation for distillation of mixtures
+of chemical compounds.
+
+.. image:: ../../distillation/column_diagram.png
+    :width: 400
+    :align: center
+
+Installation
+============
+After downloading the source code,
+the dependencies can be installed by
+navigating to the outer directory and typing
+
+.. code::
+
+    pip install -r requirements.txt
