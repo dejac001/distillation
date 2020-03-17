@@ -34,6 +34,7 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -84,7 +85,7 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="about.html">1. Distillation Python Package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">1. About</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">2. Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="balances.html">3. Material and Energy Balances</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">4. Amundson_1958</a></li>
@@ -210,7 +211,35 @@ efficiently using the following code:</p>
 <p>This mathematical trick is used throughout
 the solution algorithm.
 In fact, this approach <em>only</em> solves diagonal matrices.</p>
-<span class="target" id="module-distillation.amundson_1958"></span></div>
+<span class="target" id="module-distillation.amundson_1958"></span><div class="graphviz"><img src="_images/graphviz-94f8cd689c78470b30619f43f2dd27c1536a31a1.png" alt="digraph {
+       input -&gt; initial_guess -&gt; calc_K -&gt; mass_balance -&gt; bubble_pt -&gt; converg_1;
+       converg_1 -&gt; calc_K[label=&quot;No&quot;,color=red];
+       converg_1 -&gt; energy_balance[label=&quot;Yes&quot;,color=green];
+       energy_balance -&gt; converg_2;
+       converg_2 -&gt; finish[label=&quot;Yes&quot;,color=green];
+       converg_2 -&gt; mass_balance[label=&quot;No&quot;,color=red];
+
+       input [shape=polygon,side=4,label=&quot;Input equilibrium and enthalpy data.
+Input design variables&quot;];
+       initial_guess [shape=polygon,side=4,label=&quot;Pick L, V, T
+on every stage&quot;];
+       calc_K [shape=polygon,side=4,label=&quot;Calculate K for each component
+on each stage&quot;];
+       mass_balance [shape=polygon,side=4,label=&quot;Solve component mass
+balances in matrix form&quot;,color=lightblue,style=filled];
+       bubble_pt [shape=polygon,side=4,label=&quot;Calculate T on each stage
+using bubble point calculation&quot;];
+       converg_1 [shape=diamond,label=&quot;Determine whether
+T is converged
+for all stages&quot;];
+       energy_balance [shape=polygon,side=4,label=&quot;Use energy balance to calculate
+L, V on every stage&quot;,color=lightblue,style=filled];
+       converg_2 [shape=diamond,label=&quot;Determine whether
+L, V are converged
+for all stages&quot;];
+       finish [shape=ellipse,label=&quot;Finished&quot;];
+   }" class="graphviz" /></div>
+</div>
 </div>
 
 
