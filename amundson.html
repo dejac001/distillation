@@ -38,7 +38,7 @@
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="5. bubble_point" href="bubble.html" />
+    <link rel="next" title="5. Bubble Point" href="bubble.html" />
     <link rel="prev" title="3. Material and Energy Balances" href="balances.html" /> 
 </head>
 
@@ -88,9 +88,24 @@
 <li class="toctree-l1"><a class="reference internal" href="about.html">1. About</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">2. Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="balances.html">3. Material and Energy Balances</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Amundson_1958</a></li>
-<li class="toctree-l1"><a class="reference internal" href="bubble.html">5. bubble_point</a></li>
-<li class="toctree-l1"><a class="reference internal" href="equil.html">6. equilibrium_data</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">4. Amundson_1958</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#mathematical-trick">4.1. Mathematical Trick</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-algorithm">4.2. The algorithm</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#step-1">4.2.1. Step 1</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-2">4.2.2. Step 2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-3">4.2.3. Step 3</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-4">4.2.4. Step 4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-5">4.2.5. Step 5</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-6">4.2.6. Step 6</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-7">4.2.7. Step 7</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-8">4.2.8. Step 8</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="bubble.html">5. Bubble Point</a></li>
+<li class="toctree-l1"><a class="reference internal" href="equil.html">6. Equilibrium Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">7. modules</a></li>
 </ul>
 
             
@@ -157,15 +172,15 @@
             
   <div class="section" id="amundson-1958">
 <h1><span class="section-number">4. </span>Amundson_1958<a class="headerlink" href="#amundson-1958" title="Permalink to this headline">¶</a></h1>
-<p>This approach <a class="reference internal" href="#amundson1958" id="id1"><span>[Amundson1958]</span></a> uses the following mathematical trick to
-efficiently solve multicomponent distillation problems.</p>
+<p>This code follows the approach that was published by Amundson and Pontinen <a class="reference internal" href="#amundson1958" id="id1"><span>[Amundson1958]</span></a>.</p>
 <dl class="citation">
 <dt class="label" id="amundson1958"><span class="brackets"><a class="fn-backref" href="#id1">Amundson1958</a></span></dt>
 <dd><p>Amundson, NR and Pontinen, AJ. Multicomponent Distillation Calculations on a Large Digital Computer. <em>Ind. Eng. Chem.</em> 1958;50:730–736.</p>
 </dd>
 </dl>
+<p>This approach takes advantage of the following mathematical trick.</p>
 <div class="section" id="mathematical-trick">
-<h2><span class="section-number">4.1. </span>Mathematical Trick<a class="headerlink" href="#mathematical-trick" title="Permalink to this headline">¶</a></h2>
+<span id="tri-matrix"></span><h2><span class="section-number">4.1. </span>Mathematical Trick<a class="headerlink" href="#mathematical-trick" title="Permalink to this headline">¶</a></h2>
 <p>A system of equations such as</p>
 <div class="math notranslate nohighlight">
 \[Ax=b\]</div>
@@ -182,7 +197,9 @@ can be solved very efficiently if the matrix
     0 &amp; 0 &amp; l_2 &amp; d_3 &amp; u_3  \\
     0 &amp; 0 &amp;  0 &amp; l_3 &amp; d_4
 \end{bmatrix}\end{split}\]</div>
-<p>For example, if we define the following vectors</p>
+<p>This special type of matrix
+is called a <a class="reference external" href="https://en.wikipedia.org/wiki/Tridiagonal_matrix">tridiagonal_matrix</a>.</p>
+<p>It can be solved, for example, if we define the following vectors</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{align}
     l &amp;= [l_0, l_1, l_2, l_3] \\
@@ -190,7 +207,7 @@ can be solved very efficiently if the matrix
     u &amp;= [u_0, u_1, u_2, u_3] \\
     b &amp;= [b_0, b_1, b_2, b_3]
 \end{align}\end{split}\]</div>
-<p>Using some code like</p>
+<p>or, with python code, like</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="n">l_0</span><span class="p">,</span> <span class="n">l_1</span><span class="p">,</span> <span class="n">l_2</span><span class="p">,</span> <span class="n">l_3</span><span class="p">]</span>
 <span class="n">d</span> <span class="o">=</span> <span class="p">[</span><span class="n">d_0</span><span class="p">,</span> <span class="n">d_1</span><span class="p">,</span> <span class="n">d_2</span><span class="p">,</span> <span class="n">d_3</span><span class="p">,</span> <span class="n">d_4</span><span class="p">]</span>
 <span class="n">u</span> <span class="o">=</span> <span class="p">[</span><span class="n">u_0</span><span class="p">,</span> <span class="n">u_1</span><span class="p">,</span> <span class="n">u_2</span><span class="p">,</span> <span class="n">u_3</span><span class="p">]</span>
@@ -209,36 +226,140 @@ efficiently using the following code:</p>
 </pre></div>
 </div>
 <p>This mathematical trick is used throughout
-the solution algorithm.
-In fact, this approach <em>only</em> solves diagonal matrices.</p>
-<span class="target" id="module-distillation.amundson_1958"></span><div class="graphviz"><img src="_images/graphviz-94f8cd689c78470b30619f43f2dd27c1536a31a1.png" alt="digraph {
-       input -&gt; initial_guess -&gt; calc_K -&gt; mass_balance -&gt; bubble_pt -&gt; converg_1;
-       converg_1 -&gt; calc_K[label=&quot;No&quot;,color=red];
-       converg_1 -&gt; energy_balance[label=&quot;Yes&quot;,color=green];
-       energy_balance -&gt; converg_2;
-       converg_2 -&gt; finish[label=&quot;Yes&quot;,color=green];
-       converg_2 -&gt; mass_balance[label=&quot;No&quot;,color=red];
+the solution algorithm.</p>
+</div>
+<div class="section" id="the-algorithm">
+<h2><span class="section-number">4.2. </span>The algorithm<a class="headerlink" href="#the-algorithm" title="Permalink to this headline">¶</a></h2>
+<p>The complete algorithm is shown in the diagram below.</p>
+<div class="graphviz"><img src="_images/graphviz-97d9c31bef3ff69b982f778b74958580c6feda85.png" alt="digraph {
+    input -&gt; initial_guess -&gt; calc_K -&gt; mass_balance -&gt; bubble_pt -&gt; converg_1;
+    converg_1 -&gt; calc_K[label=&quot;No&quot;,color=red];
+    converg_1 -&gt; energy_balance[label=&quot;Yes&quot;,color=green];
+    energy_balance -&gt; converg_2;
+    converg_2 -&gt; finish[label=&quot;Yes&quot;,color=green];
+    converg_2 -&gt; mass_balance[label=&quot;No&quot;,color=red];
 
-       input [shape=polygon,side=4,label=&quot;Input equilibrium and enthalpy data.
-Input design variables&quot;];
-       initial_guess [shape=polygon,side=4,label=&quot;Pick L, V, T
-on every stage&quot;];
-       calc_K [shape=polygon,side=4,label=&quot;Calculate K for each component
-on each stage&quot;];
-       mass_balance [shape=polygon,side=4,label=&quot;Solve component mass
-balances in matrix form&quot;,color=lightblue,style=filled];
-       bubble_pt [shape=polygon,side=4,label=&quot;Calculate T on each stage
-using bubble point calculation&quot;];
-       converg_1 [shape=diamond,label=&quot;Determine whether
-T is converged
-for all stages&quot;];
-       energy_balance [shape=polygon,side=4,label=&quot;Use energy balance to calculate
-L, V on every stage&quot;,color=lightblue,style=filled];
-       converg_2 [shape=diamond,label=&quot;Determine whether
-L, V are converged
-for all stages&quot;];
-       finish [shape=ellipse,label=&quot;Finished&quot;];
-   }" class="graphviz" /></div>
+    input [shape=polygon,side=4,label=&quot;1. Input equilibrium and enthalpy data.\n Input design variables&quot;];
+    initial_guess [shape=polygon,side=4,label=&quot;2. Pick L, V, T\n on every stage&quot;];
+    calc_K [shape=polygon,side=4,label=&quot;3. Calculate K for each component\n on each stage&quot;];
+    mass_balance [shape=polygon,side=4,label=&quot;4. Solve component mass\n balances in matrix form&quot;,color=lightblue,style=filled];
+    bubble_pt [shape=polygon,side=4,label=&quot;5. Calculate T on each stage\n using bubble point calculation&quot;];
+    converg_1 [shape=diamond,label=&quot;6. Determine whether\n T is converged\n for all stages&quot;];
+    energy_balance [shape=polygon,side=4,label=&quot;7. Use energy balance to calculate\n L, V on every stage&quot;,color=lightblue,style=filled];
+    converg_2 [shape=diamond,label=&quot;8. Determine whether\n L, V are converged\n for all stages&quot;];
+    finish [shape=ellipse,label=&quot;9. Finished&quot;];
+}" class="graphviz" /></div>
+<div class="section" id="step-1">
+<h3><span class="section-number">4.2.1. </span>Step 1<a class="headerlink" href="#step-1" title="Permalink to this headline">¶</a></h3>
+<p>In Step 1, the property data and design variables are input.
+The property data is described in <a class="reference internal" href="equil.html#equil-data"><span class="std std-ref">Equilibrium Properties</span></a>.
+A model with this property data and input design variables is created
+by the following code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">distillation.model.amundson_1958.main</span> <span class="kn">import</span> <span class="n">Model</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+    <span class="n">components</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;n-Butane&#39;</span><span class="p">,</span> <span class="s1">&#39;n-Pentane&#39;</span><span class="p">],</span>
+    <span class="n">F</span><span class="o">=</span><span class="mf">1000.</span><span class="p">,</span>              <span class="c1"># feed flow rate [kmol/h]</span>
+    <span class="n">P</span><span class="o">=</span><span class="mf">101325.</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span>          <span class="c1"># pressure (constant) [Pa]</span>
+    <span class="n">z_feed</span><span class="o">=</span><span class="p">[</span><span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.55</span><span class="p">],</span>  <span class="c1"># mole fraction n-Butane = 0.45</span>
+    <span class="n">RR</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>                <span class="c1"># reflux ratio [L/D]</span>
+    <span class="n">D</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span>               <span class="c1"># distillate flow rate [kmol/h]</span>
+    <span class="n">N</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>                  <span class="c1"># number of equilibrium contacts</span>
+    <span class="n">feed_stage</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>         <span class="c1"># stage at which feed goes in</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Currently, the input design flow rates must be
+specified in kmol/h and the pressure must be specified in Pa.
+The method called in this process is
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.__init__()</span></code></p>
+</div>
+<div class="section" id="step-2">
+<span id="step2"></span><h3><span class="section-number">4.2.2. </span>Step 2<a class="headerlink" href="#step-2" title="Permalink to this headline">¶</a></h3>
+<p>Before beginning the solution procedure,
+we need to have an initial guess for the liquid flow rates,
+vapor flow rates, and temperatures on each stage <span class="math notranslate nohighlight">\(j\)</span>.
+That is, we need to generate initial guesses for
+<span class="math notranslate nohighlight">\(L_j\)</span>, <span class="math notranslate nohighlight">\(V_j\)</span>, and <span class="math notranslate nohighlight">\(T_j\)</span>.</p>
+<p>First we calculate the feed temperature
+(specified as a saturated liquid) using
+a bubble point calculation (see <a class="reference internal" href="bubble.html#bubble"><span class="std std-ref">Bubble Point</span></a>).
+We set the temperatures <span class="math notranslate nohighlight">\(T_j\)</span>
+to be the same as the feed temperature.</p>
+<p>Then, we generate the initial guesses
+for these values by assuming constant molal overflow.
+The code for this step is depicted in
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.initialize_CMO()</span></code></p>
+</div>
+<div class="section" id="step-3">
+<h3><span class="section-number">4.2.3. </span>Step 3<a class="headerlink" href="#step-3" title="Permalink to this headline">¶</a></h3>
+<p>In Step 3, we calculate <span class="math notranslate nohighlight">\(K_{i,j}\)</span>, the
+<span class="math notranslate nohighlight">\(K\)</span>-value for each component <span class="math notranslate nohighlight">\(i\)</span> on stage <span class="math notranslate nohighlight">\(j\)</span>.
+We can think of this step as doing something similar to the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">stages</span><span class="p">:</span>
+        <span class="n">K</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">K_func</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">T</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where the <code class="code docutils literal notranslate"><span class="pre">K_func</span></code> function returns the <span class="math notranslate nohighlight">\(K\)</span>-value for component
+<span class="math notranslate nohighlight">\(i\)</span> on stage <span class="math notranslate nohighlight">\(j\)</span>.
+The <code class="code docutils literal notranslate"><span class="pre">for</span></code> loops iteratively store the <span class="math notranslate nohighlight">\(K\)</span>-values in each component of the amtrix.</p>
+</div>
+<div class="section" id="step-4">
+<span id="stage-4"></span><h3><span class="section-number">4.2.4. </span>Step 4<a class="headerlink" href="#step-4" title="Permalink to this headline">¶</a></h3>
+<p>The two stages in which tridiagonal matrices are used
+for computational efficiency are <a class="reference internal" href="#stage-4"><span class="std std-ref">Step 4</span></a> and <a class="reference internal" href="#step-7"><span class="std std-ref">Step 7</span></a>,
+which are depicted in colored blue boxes.</p>
+<p>In this step, the matrices are tridiagonal for the complete
+mass balances for <em>each</em> component (as opposed to all components together).
+In this case, the approach becomes something of the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">generate_A_matrix</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">solve</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>First, the tridiagonal matrix is generated.
+Then, the efficient approach described in <a class="reference internal" href="#tri-matrix"><span class="std std-ref">Mathematical Trick</span></a> is used.
+to solve the equations.</p>
+</div>
+<div class="section" id="step-5">
+<h3><span class="section-number">4.2.5. </span>Step 5<a class="headerlink" href="#step-5" title="Permalink to this headline">¶</a></h3>
+<p>In <a class="reference internal" href="#step2"><span class="std std-ref">Step 2</span></a>, we performed a <a class="reference internal" href="bubble.html#bubble"><span class="std std-ref">Bubble Point</span></a> calculation
+to determine the temperature of the feed.
+We do the same thing here, except we do it multiple times
+(i.e., for each stage).</p>
+</div>
+<div class="section" id="step-6">
+<h3><span class="section-number">4.2.6. </span>Step 6<a class="headerlink" href="#step-6" title="Permalink to this headline">¶</a></h3>
+<p>In Step 6, we determine whether the temperatures on all stages <span class="math notranslate nohighlight">\(j\)</span>,
+<span class="math notranslate nohighlight">\(T_j\)</span>, have converged.</p>
+<p>Mathematically, we require the following</p>
+<div class="math notranslate nohighlight">
+\[\sqrt{\left(T_{j,\mathrm{new}} - T_{j,\mathrm{old}}\right)^2} &lt; \epsilon_6\]</div>
+<p>The temperature tolerance, <span class="math notranslate nohighlight">\(\epsilon_6\)</span>,
+is found in the attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.temperature_tol</span></code>.</p>
+</div>
+<div class="section" id="step-7">
+<span id="id2"></span><h3><span class="section-number">4.2.7. </span>Step 7<a class="headerlink" href="#step-7" title="Permalink to this headline">¶</a></h3>
+<p>In Step 7, we solve the energy balances.
+Here, all the balances can be combined into one banded matrix.</p>
+</div>
+<div class="section" id="step-8">
+<h3><span class="section-number">4.2.8. </span>Step 8<a class="headerlink" href="#step-8" title="Permalink to this headline">¶</a></h3>
+<p>In this step, we determine if the simulation has converged.
+If the following holds true for all stages <span class="math notranslate nohighlight">\(j\)</span></p>
+<div class="math notranslate nohighlight">
+\[\sqrt{\left(\frac{X_{j,\mathrm{new}} - X_{j,\mathrm{old}}}{X_{j,\mathrm{new}}}\right)^2} &lt; \epsilon_8\]</div>
+<p>for each variable <span class="math notranslate nohighlight">\(X=V\)</span> and <span class="math notranslate nohighlight">\(X=L\)</span>.
+The relevant methods that check to see if <span class="math notranslate nohighlight">\(L\)</span> is converged and if
+<span class="math notranslate nohighlight">\(V\)</span> is converged can be found in
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.L_is_converged()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.V_is_converged()</span></code>,
+respectively.</p>
+<p>The flow rate tolerance, <span class="math notranslate nohighlight">\(\epsilon_8\)</span>,
+is found in the attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.flow_rate_tol</span></code>.</p>
+</div>
 </div>
 </div>
 
@@ -250,7 +371,7 @@ for all stages&quot;];
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="bubble.html" class="btn btn-neutral float-right" title="5. bubble_point" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="bubble.html" class="btn btn-neutral float-right" title="5. Bubble Point" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="balances.html" class="btn btn-neutral float-left" title="3. Material and Energy Balances" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

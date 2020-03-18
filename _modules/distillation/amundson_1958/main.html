@@ -1,0 +1,489 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>distillation.amundson_1958.main &mdash; distillation 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+    <link rel="author" title="About these documents" href="../../../about.html" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> distillation
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../about.html">1. About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../balances.html">3. Material and Energy Balances</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../amundson.html">4. Amundson_1958</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bubble.html">5. Bubble Point</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../equil.html">6. Equilibrium Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">7. modules</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">distillation</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>distillation.amundson_1958.main</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for distillation.amundson_1958.main</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">distillation.amundson_1958.component_mass_balances</span> <span class="kn">import</span> <span class="n">make_ABC</span>
+<span class="kn">from</span> <span class="nn">distillation.bubble_point.calculation</span> <span class="kn">import</span> <span class="n">bubble_point</span>
+<span class="kn">from</span> <span class="nn">distillation.solvers</span> <span class="kn">import</span> <span class="n">solve_diagonal</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">linalg</span><span class="p">,</span> <span class="n">diags</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="Model"><a class="viewcode-back" href="../../../modules.html#distillation.amundson_1958.main.Model">[docs]</a><span class="k">class</span> <span class="nc">Model</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">components</span><span class="p">:</span> <span class="nb">list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">F</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mf">0.</span><span class="p">,</span> <span class="n">P</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mf">101325.</span><span class="p">,</span>
+                 <span class="n">z_feed</span><span class="p">:</span> <span class="nb">list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">RR</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">D</span><span class="p">:</span> <span class="nb">float</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">N</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">feed_stage</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Distillation column with partial reboiler and total condenser.</span>
+<span class="sd">        Feed is saturated liquid.</span>
+
+
+<span class="sd">        :param components: list of component names</span>
+<span class="sd">        :param F: feed molar flow rate</span>
+<span class="sd">        :param P: pressure (constant throughout column), [Pa]</span>
+<span class="sd">        :param z_feed: mole fractions of each component, ordered</span>
+<span class="sd">        :param RR: reflux ratio (L/D)</span>
+<span class="sd">        :param D: distillate molar flow rate</span>
+<span class="sd">        :param N: number of equilibrium contacts</span>
+<span class="sd">        :param feed_stage: stage where feed is input</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flow_rate_tol</span> <span class="o">=</span> <span class="mf">1.e-4</span>
+        <span class="kn">from</span> <span class="nn">distillation.equilibrium_data.depriester_charts</span> <span class="kn">import</span> <span class="n">DePriester</span>
+        <span class="kn">from</span> <span class="nn">distillation.equilibrium_data.heat_capacity_liquid</span> <span class="kn">import</span> <span class="n">CpL</span>
+        <span class="kn">from</span> <span class="nn">distillation.equilibrium_data.heat_capacity_vapor</span> <span class="kn">import</span> <span class="n">CpV</span>
+        <span class="kn">from</span> <span class="nn">distillation.equilibrium_data.heats_of_vaporization</span> <span class="kn">import</span> <span class="n">dH_vap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">components</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">F_feed</span> <span class="o">=</span> <span class="n">F</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">P_feed</span> <span class="o">=</span> <span class="n">P</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z_feed</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">val</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">components</span><span class="p">,</span> <span class="n">z_feed</span><span class="p">)}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RR</span> <span class="o">=</span> <span class="n">RR</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">=</span> <span class="n">D</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">B</span> <span class="o">=</span> <span class="n">F</span> <span class="o">-</span> <span class="n">D</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">N</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">feed_stage</span> <span class="o">=</span> <span class="n">feed_stage</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;distillation&#39;</span><span class="p">,</span> <span class="s1">&#39;equilibrium_data&#39;</span><span class="p">,</span> <span class="s1">&#39;depriester.csv&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">K_func</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="n">DePriester</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span>
+        <span class="p">}</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;distillation&#39;</span><span class="p">,</span> <span class="s1">&#39;equilibrium_data&#39;</span><span class="p">,</span> <span class="s1">&#39;heat_capacity_liquid.csv&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CpL_func</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="n">CpL</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">CpV_func</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="n">CpV</span><span class="p">()</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span>
+        <span class="p">}</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;distillation&#39;</span><span class="p">,</span> <span class="s1">&#39;equilibrium_data&#39;</span><span class="p">,</span> <span class="s1">&#39;heats_of_vaporization.csv&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dH_func</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="n">dH_vap</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">T_ref</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="n">val</span><span class="o">.</span><span class="n">T_ref</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dH_func</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">}</span>
+
+        <span class="c1"># create matrices for variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">L</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">V</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">[</span><span class="n">N</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">B</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>  <span class="c1"># total condenser</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">F</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">feed_stage</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">F_feed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">components</span>
+        <span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">component</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="n">component</span><span class="p">][</span><span class="n">feed_stage</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_feed</span><span class="p">[</span><span class="n">component</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">component</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_feed</span><span class="p">[</span><span class="n">component</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">component</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">z_feed</span><span class="p">[</span><span class="n">component</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># perform bubble point calculation on the feed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">T_feed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_T_feed</span><span class="p">()</span>
+
+        <span class="c1"># initialize T and K for all stages at feed temperature</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">T_old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">T_feed</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">T_new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">T_feed</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">K</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">key</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">K_func</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">eval_SI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T_feed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">P_feed</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span>
+        <span class="p">}</span>
+
+        <span class="c1"># solver parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="mf">1.</span>  <span class="c1"># Dampening factor to prevent excessive oscillation of temperatures</span>
+
+<div class="viewcode-block" id="Model.h_pure_rule"><a class="viewcode-back" href="../../../modules.html#distillation.amundson_1958.main.Model.h_pure_rule">[docs]</a>    <span class="k">def</span> <span class="nf">h_pure_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;rule for liquid enthalpy of pure component&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CpL_func</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">integral_dT</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T_ref</span><span class="p">[</span><span class="n">c</span><span class="p">],</span> <span class="n">T</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Model.h_j_rule"><a class="viewcode-back" href="../../../modules.html#distillation.amundson_1958.main.Model.h_j_rule">[docs]</a>    <span class="k">def</span> <span class="nf">h_j_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Enthalpy of liquid on stage *j*.</span>
+<span class="sd">        Calculated for ideal mixture</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            h_j = \sum_i x_{ij}\overbar{h}_i(T_j)</span>
+
+<span class="sd">        where the overbar indicates the pure component enthalpy</span>
+<span class="sd">        units of J/kmol</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">stage</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h_pure_rule</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">T_new</span><span class="p">[</span><span class="n">stage</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Model.h_feed_rule"><a class="viewcode-back" href="../../../modules.html#distillation.amundson_1958.main.Model.h_feed_rule">[docs]</a>    <span class="k">def</span> <span class="nf">h_feed_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Enthalpy of liquid in feed mixture</span>
+<span class="sd">        Calculated for ideal mixture</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            h_j = \sum_i x_{ij}\overbar{h}_i(T_j)</span>
+
+<span class="sd">        where the overbar indicates the pure component enthalpy</span>
+<span class="sd">        units of J/kmol</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">stage</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h_pure_rule</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">T_feed</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Model.H_pure_rule"><a class="viewcode-back" href="../../../modules.html#distillation.amundson_1958.main.Model.H_pure_rule">[docs]</a>    <span class="k">def</span> <span class="nf">H_pure_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">T</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Rule for vapor enthalpy of pure component&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">CpV_func</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">integral_dT</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T_ref</span><span class="p">[</span><span class="n">c</span><span class="p">],</span> <span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dH_func</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Model.H_j_rule"><a class="viewcode-back" href="../../../modules.html#distillation.amundson_1958.main.Model.H_j_rule">[docs]</a>    <span class="k">def</span> <span class="nf">H_j_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stage</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Enthalpy of vapor on stage *j*.</span>
+<span class="sd">        Calculated for ideal mixture</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            H_j = \sum_i y_{ij}\overbar{H}_i(T_j)</span>
+
+<span class="sd">        where the overbar indicates the pure component enthalpy</span>
+<span class="sd">        units of J/kmol</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">stage</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">H_pure_rule</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">T_new</span><span class="p">[</span><span class="n">stage</span><span class="p">])</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Model.Q_condenser_rule"><a class="viewcode-back" href="../../../modules.html#distillation.amundson_1958.main.Model.Q_condenser_rule">[docs]</a>    <span class="k">def</span> <span class="nf">Q_condenser_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Condenser requirement can be determined from balances around total condenser&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">RR</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_j_rule</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">H_j_rule</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Model.Q_reboiler_rule"><a class="viewcode-back" href="../../../modules.html#distillation.amundson_1958.main.Model.Q_reboiler_rule">[docs]</a>    <span class="k">def</span> <span class="nf">Q_reboiler_rule</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Condenser requirement can be determined from balances around total condenser&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h_j_rule</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">B</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h_j_rule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span> \
+               <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">F_feed</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h_feed_rule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">feed_stage</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q_condenser_rule</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_iter</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_CMO</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solve_component_mass_balances</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">temperature_is_converged</span><span class="p">():</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;temperature converged in </span><span class="si">%i</span><span class="s1"> iterations&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_iter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                    <span class="n">converged</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">solve_energy_balances</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">converged</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;flow rates converged in </span><span class="si">%i</span><span class="s1"> iterations&#39;</span> <span class="o">%</span> <span class="n">i</span><span class="p">)</span>
+
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;flow ratesdid not converge in </span><span class="si">%i</span><span class="s1"> iterations&#39;</span> <span class="o">%</span> <span class="n">num_iter</span><span class="p">)</span>
+                <span class="k">return</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;temperature did not converge in </span><span class="si">%i</span><span class="s1"> iterations&#39;</span> <span class="o">%</span> <span class="n">num_iter</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">temperature_is_converged</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-2</span>
+        <span class="n">eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T_new</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">T_old</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">eps</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">T_old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">T_new</span><span class="p">[:]</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="Model.calculate_T_feed"><a class="viewcode-back" href="../../../modules.html#distillation.amundson_1958.main.Model.calculate_T_feed">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_T_feed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Feed mixture is saturated liquid. Calculate T_feed with bubble point calculation&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">bubble_point</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">z_feed</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">],</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">K_func</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">eval_SI</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">P_feed</span><span class="p">,</span> <span class="mf">300.</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Model.initialize_CMO"><a class="viewcode-back" href="../../../modules.html#distillation.amundson_1958.main.Model.initialize_CMO">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_CMO</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Make initial guesses for flow rates and temperatures&quot;&quot;&quot;</span>
+
+        <span class="c1"># make matrix assuming CMO</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">feed_stage</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RR</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">feed_stage</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RR</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">F_feed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">RR</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span></div>
+
+<div class="viewcode-block" id="Model.solve_component_mass_balances"><a class="viewcode-back" href="../../../modules.html#distillation.amundson_1958.main.Model.solve_component_mass_balances">[docs]</a>    <span class="k">def</span> <span class="nf">solve_component_mass_balances</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate component liquid flow rates.&quot;&quot;&quot;</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">component</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">):</span>
+            <span class="c1"># todo: dont need to calculate D and A as these are constant</span>
+            <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span> <span class="o">=</span> <span class="n">make_ABC</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">component</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">[</span><span class="n">component</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">B</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span>
+            <span class="p">)</span>
+            <span class="n">l</span><span class="p">[</span><span class="n">component</span><span class="p">]</span> <span class="o">=</span> <span class="n">solve_diagonal</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
+
+        <span class="c1"># todo: vectorize all this with matrix multiplication</span>
+        <span class="c1"># update from old calculations</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+
+            <span class="c1"># update mole fractions</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">l</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">)</span>
+
+            <span class="c1"># calculate stage temperature now that all liquid-phase mole fractions are known</span>
+            <span class="n">K_vals</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">K_func</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">eval_SI</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">]</span>
+            <span class="n">x_vals</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">T_new</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">T_old</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">*</span> <span class="p">(</span>
+                    <span class="n">bubble_point</span><span class="p">(</span><span class="n">x_vals</span><span class="p">,</span> <span class="n">K_vals</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">P_feed</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">T_old</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">T_old</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+                <span class="c1"># update K</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">K_func</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">.</span><span class="n">eval_SI</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">T_old</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">P_feed</span><span class="p">)</span>
+                <span class="c1"># update y</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">c</span><span class="p">][</span><span class="n">i</span><span class="p">]</span></div>
+
+        <span class="c1"># update L</span>
+        <span class="c1"># for i in range(self.N + 1):</span>
+        <span class="c1">#     self.L[i] = sum(l[c][i] for c in self.components)</span>
+        <span class="c1"># calculate V from overall mass balance at each equilibrium stage</span>
+        <span class="c1"># self.V[self.N] = self.L[self.N-1] - self.B</span>
+        <span class="c1"># for i in range(self.N-1, 1):</span>
+        <span class="c1">#     self.V[i] = self.L[i-1] + self.V[i + 1] + self.F[i] - self.L[i]</span>
+        <span class="c1"># self.V[1] = self.B + self.L[0]</span>
+        <span class="c1"># self.V[0] = 0. # total condenser</span>
+
+<div class="viewcode-block" id="Model.solve_energy_balances"><a class="viewcode-back" href="../../../modules.html#distillation.amundson_1958.main.Model.solve_energy_balances">[docs]</a>    <span class="k">def</span> <span class="nf">solve_energy_balances</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Solve energy balances&quot;&quot;&quot;</span>
+        <span class="n">V_old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">[:]</span>
+        <span class="n">L_old</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">[:]</span>
+
+        <span class="n">BE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">CE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
+        <span class="n">DE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># total condenser</span>
+        <span class="n">BE</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.</span>
+        <span class="n">CE</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_j_rule</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">H_j_rule</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">DE</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h_feed_rule</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q_condenser_rule</span><span class="p">()</span>
+
+        <span class="c1"># partial reboiler</span>
+        <span class="n">BE</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">H_j_rule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">H_j_rule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">DE</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h_feed_rule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q_reboiler_rule</span><span class="p">()</span> \
+                     <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">B</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_j_rule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">h_j_rule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">))</span> \
+                     <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h_j_rule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># stages 1 to N-1</span>
+        <span class="n">BE</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">H_j_rule</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_j_rule</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">))</span>
+        <span class="n">CE</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_j_rule</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">H_j_rule</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">))</span>
+        <span class="n">DE</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h_feed_rule</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h_j_rule</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">h_j_rule</span><span class="p">(</span><span class="n">j</span><span class="p">))</span>
+                        <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h_j_rule</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+                        <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">j</span><span class="p">))</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">h_j_rule</span><span class="p">(</span><span class="n">j</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">))</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">diags</span><span class="p">(</span>
+            <span class="n">diagonals</span><span class="o">=</span><span class="p">[</span><span class="n">BE</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">CE</span><span class="p">[</span><span class="mi">1</span><span class="p">:]],</span>
+            <span class="n">offsets</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">),</span>
+            <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;csr&#39;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">linalg</span><span class="o">.</span><span class="n">spsolve</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">DE</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">D</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">F</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">B</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">L_is_converged</span><span class="p">(</span><span class="n">L_old</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">V_is_converged</span><span class="p">(</span><span class="n">V_old</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">L_is_converged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">L_old</span><span class="p">):</span>
+        <span class="n">eps_L</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="n">L_old</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">eps_L</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_rate_tol</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">relative_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">old</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">((</span><span class="n">new</span> <span class="o">-</span> <span class="n">old</span><span class="p">)</span><span class="o">/</span><span class="n">new</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">V_is_converged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">V_old</span><span class="p">):</span>
+        <span class="n">eps_V</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative_error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">V</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">V_old</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="k">if</span> <span class="n">eps_V</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">flow_rate_tol</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="bp">cls</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+        <span class="p">[</span><span class="s1">&#39;n-Butane&#39;</span><span class="p">,</span> <span class="s1">&#39;n-Pentane&#39;</span><span class="p">,</span> <span class="s1">&#39;n-Octane&#39;</span><span class="p">],</span>
+        <span class="mf">1000.</span><span class="p">,</span> <span class="mf">101325.</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">],</span>
+        <span class="mf">1.5</span><span class="p">,</span> <span class="mf">550.</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span>
+    <span class="p">)</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">num_iter</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Robert F. DeJaco
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
