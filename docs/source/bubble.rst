@@ -1,4 +1,7 @@
-bubble_point
+.. _bubble:
+
+
+Bubble Point
 ============
 
 .. automodule:: distillation.bubble_point

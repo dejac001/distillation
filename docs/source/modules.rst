@@ -24,3 +24,6 @@ distillation/equilibrium_data
 
 .. automodule:: distillation.equilibrium_data.heat_capacity_vapor
     :members:
+
+.. automodule:: distillation.equilibrium_data.critical_properties
+    :members:

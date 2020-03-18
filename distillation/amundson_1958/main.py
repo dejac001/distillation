@@ -1,4 +1,4 @@
-from distillation.multicomponent_bp.component_mass_balances import make_ABC
+from distillation.amundson_1958.component_mass_balances import make_ABC
 from distillation.bubble_point.calculation import bubble_point
 from distillation.solvers import solve_diagonal
 import os
@@ -7,10 +7,12 @@ import numpy as np
 
 
 class Model:
-    def __init__(self, components: list, F: float, P: float,
-                 z_feed: list, RR: float, D: float, N: int, feed_stage: int):
+
+    def __init__(self, components: list=None, F: float=0., P: float=101325.,
+                 z_feed: list=None, RR: float=1, D: float=0, N: int=1, feed_stage: int=0):
         """Distillation column with partial reboiler and total condenser.
         Feed is saturated liquid.
+
 
         :param components: list of component names
         :param F: feed molar flow rate
@@ -22,6 +24,7 @@ class Model:
         :param feed_stage: stage where feed is input
         """
         self.flow_rate_tol = 1.e-4
+        self.temperature_tol = 1.e-2
         from distillation.equilibrium_data.depriester_charts import DePriester
         from distillation.equilibrium_data.heat_capacity_liquid import CpL
         from distillation.equilibrium_data.heat_capacity_vapor import CpV
@@ -160,9 +163,8 @@ class Model:
         print('temperature did not converge in %i iterations' % num_iter)
 
     def temperature_is_converged(self):
-        tol = 1e-2
         eps = np.abs(self.T_new - self.T_old)
-        if eps.max() < tol:
+        if eps.max() < self.temperature_tol:
             return True
 
         self.T_old = self.T_new[:]

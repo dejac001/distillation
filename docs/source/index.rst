@@ -9,7 +9,6 @@ Welcome to distillation's documentation!
 .. toctree::
    :maxdepth: 2
    :numbered:
-   :titlesonly:
    :hidden:
    :caption: Contents:
 
@@ -19,6 +18,7 @@ Welcome to distillation's documentation!
    amundson.rst
    bubble.rst
    equil.rst
+   modules.rst
 
 
 Indices and tables

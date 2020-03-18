@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>build &mdash; distillation 0.1 documentation</title>
+  <title>7. modules &mdash; distillation 0.1 documentation</title>
   
 
   
@@ -25,6 +25,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -33,8 +34,11 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="6. Equilibrium Properties" href="equil.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -78,11 +82,21 @@
               
             
             
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">build</a></li>
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="about.html">1. About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="balances.html">3. Material and Energy Balances</a></li>
+<li class="toctree-l1"><a class="reference internal" href="amundson.html">4. Amundson_1958</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bubble.html">5. Bubble Point</a></li>
+<li class="toctree-l1"><a class="reference internal" href="equil.html">6. Equilibrium Properties</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">7. modules</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-distillation.amundson_1958.main">7.1. distillation/amundson_1958</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-distillation.equilibrium_data.heat_capacity_liquid">7.2. distillation/equilibrium_data</a></li>
 </ul>
-</div>
+</li>
+</ul>
+
             
           
         </div>
@@ -126,7 +140,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>build</li>
+      <li><span class="section-number">7. </span>modules</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -145,9 +159,98 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="build">
-<h1>build<a class="headerlink" href="#build" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
+  <div class="section" id="modules">
+<h1><span class="section-number">7. </span>modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-distillation.amundson_1958.main">
+<span id="distillation-amundson-1958"></span><h2><span class="section-number">7.1. </span>distillation/amundson_1958<a class="headerlink" href="#module-distillation.amundson_1958.main" title="Permalink to this headline">¶</a></h2>
+<span class="target" id="module-distillation.amundson_1958.component_mass_balances"></span><dl class="function">
+<dt id="distillation.amundson_1958.component_mass_balances.make_ABC">
+<code class="sig-prename descclassname">distillation.amundson_1958.component_mass_balances.</code><code class="sig-name descname">make_ABC</code><span class="sig-paren">(</span><em class="sig-param">V: numpy.array</em>, <em class="sig-param">L: numpy.array</em>, <em class="sig-param">K: numpy.array</em>, <em class="sig-param">F: numpy.array</em>, <em class="sig-param">z: numpy.array</em>, <em class="sig-param">Distillate: float</em>, <em class="sig-param">Bottoms: float</em>, <em class="sig-param">N: int</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/component_mass_balances.html#make_ABC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.component_mass_balances.make_ABC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distillation column with partial reboiler and total condenser</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>K_j is assumed to depend on <em>T</em> and <em>p</em>, but not composition</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>V</strong> – vapor molar flow rate out of stage 0 to <em>N</em></p></li>
+<li><p><strong>L</strong> – liquid molar flow rate out of stage 0 to <em>N</em></p></li>
+<li><p><strong>K</strong> – equilibrium expressions for stage 0 to <em>N</em></p></li>
+<li><p><strong>F</strong> – feed flow rate into stage for stage 0 to <em>N</em></p></li>
+<li><p><strong>z</strong> – feed composition into stage for stage 0 to <em>N</em></p></li>
+<li><p><strong>Distillate</strong> – distillate flow rate</p></li>
+<li><p><strong>Bottoms</strong> – bottoms flow rate</p></li>
+<li><p><strong>N</strong> – number of equilibrium stages</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A, B, C, D</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="distillation.amundson_1958.component_mass_balances.solve_component_mass_balances">
+<code class="sig-prename descclassname">distillation.amundson_1958.component_mass_balances.</code><code class="sig-name descname">solve_component_mass_balances</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/component_mass_balances.html#solve_component_mass_balances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.component_mass_balances.solve_component_mass_balances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Distillation column with partial reboiler and total condenser</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>K_j is assumed to depend on <em>T</em> and <em>p</em>, but not composition</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>V</strong> – vapor molar flow rate out of stage 0 to <em>N</em></p></li>
+<li><p><strong>L</strong> – liquid molar flow rate out of stage 0 to <em>N</em></p></li>
+<li><p><strong>K</strong> – equilibrium expressions for stage 0 to <em>N</em></p></li>
+<li><p><strong>F</strong> – feed flow rate into stage for stage 0 to <em>N</em></p></li>
+<li><p><strong>z</strong> – feed composition into stage for stage 0 to <em>N</em></p></li>
+<li><p><strong>Distillate</strong> – distillate flow rate</p></li>
+<li><p><strong>Bottoms</strong> – bottoms flow rate</p></li>
+<li><p><strong>N</strong> – number of equilibrium stages</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>l</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-distillation.equilibrium_data.heat_capacity_liquid">
+<span id="distillation-equilibrium-data"></span><h2><span class="section-number">7.2. </span>distillation/equilibrium_data<a class="headerlink" href="#module-distillation.equilibrium_data.heat_capacity_liquid" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="distillation.equilibrium_data.heat_capacity_liquid.CpL">
+<em class="property">class </em><code class="sig-prename descclassname">distillation.equilibrium_data.heat_capacity_liquid.</code><code class="sig-name descname">CpL</code><span class="sig-paren">(</span><em class="sig-param">compound_name</em>, <em class="sig-param">f_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/equilibrium_data/heat_capacity_liquid.html#CpL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.equilibrium_data.heat_capacity_liquid.CpL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Heat capacities of liquids</p>
+<dl class="method">
+<dt id="distillation.equilibrium_data.heat_capacity_liquid.CpL.eval">
+<code class="sig-name descname">eval</code><span class="sig-paren">(</span><em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/equilibrium_data/heat_capacity_liquid.html#CpL.eval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.equilibrium_data.heat_capacity_liquid.CpL.eval" title="Permalink to this definition">¶</a></dt>
+<dd><p>return heat capacity liquid in J/kmol/K</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.equilibrium_data.heat_capacity_liquid.CpL.integral_dT">
+<code class="sig-name descname">integral_dT</code><span class="sig-paren">(</span><em class="sig-param">T_ref</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/equilibrium_data/heat_capacity_liquid.html#CpL.integral_dT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.equilibrium_data.heat_capacity_liquid.CpL.integral_dT" title="Permalink to this definition">¶</a></dt>
+<dd><div class="math notranslate nohighlight">
+\[\int_{Tref}^T CpL dT\]</div>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-distillation.equilibrium_data.heats_of_vaporization"></span><dl class="class">
+<dt id="distillation.equilibrium_data.heats_of_vaporization.dH_vap">
+<em class="property">class </em><code class="sig-prename descclassname">distillation.equilibrium_data.heats_of_vaporization.</code><code class="sig-name descname">dH_vap</code><span class="sig-paren">(</span><em class="sig-param">compound_name</em>, <em class="sig-param">f_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/equilibrium_data/heats_of_vaporization.html#dH_vap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.equilibrium_data.heats_of_vaporization.dH_vap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Heat of vaporization</p>
+</dd></dl>
+
+<span class="target" id="module-distillation.equilibrium_data.depriester_charts"></span><span class="target" id="module-distillation.equilibrium_data.heat_capacity_vapor"></span><dl class="class">
+<dt id="distillation.equilibrium_data.heat_capacity_vapor.CpV">
+<em class="property">class </em><code class="sig-prename descclassname">distillation.equilibrium_data.heat_capacity_vapor.</code><code class="sig-name descname">CpV</code><a class="reference internal" href="_modules/distillation/equilibrium_data/heat_capacity_vapor.html#CpV"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.equilibrium_data.heat_capacity_vapor.CpV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Heat capacities of vapor</p>
+</dd></dl>
+
 </div>
 </div>
 
@@ -156,6 +259,13 @@
            
           </div>
           <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="equil.html" class="btn btn-neutral float-left" title="6. Equilibrium Properties" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
   
 
   <hr/>

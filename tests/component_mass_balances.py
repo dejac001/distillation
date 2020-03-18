@@ -12,7 +12,7 @@ class MyTestCase(unittest.TestCase):
         The reflux is a saturated liquid, and L/D=1.5.
         The distillate rate is D = 550 kmol/h.
         """
-        from distillation.multicomponent_bp.main import Model
+        from distillation.amundson_1958.main import Model
         cls = Model(
             ['n-Butane', 'n-Pentane', 'n-Octane'],
             1000., 101325. * 2,
