@@ -7,9 +7,6 @@ distillation/amundson_1958
 .. automodule:: distillation.amundson_1958.main
     :members:
 
-.. automodule:: distillation.amundson_1958.component_mass_balances
-    :members:
-
 distillation/equilibrium_data
 -----------------------------
 

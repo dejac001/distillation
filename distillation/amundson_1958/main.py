@@ -1,18 +1,17 @@
-from distillation.amundson_1958.component_mass_balances import make_ABC
 from distillation.bubble_point.calculation import bubble_point
 from distillation.solvers import solve_diagonal
-import os
 from scipy.sparse import linalg, diags
 import numpy as np
 
 
 class Model:
-
     def __init__(self, components: list=None, F: float=0., P: float=101325.,
-                 z_feed: list=None, RR: float=1, D: float=0, N: int=1, feed_stage: int=0):
+                 z_feed: list=None, RR: float=1, D: float=0, N: int=1, feed_stage: int=0, T_feed_guess: float=300.):
         """Distillation column with partial reboiler and total condenser.
         Feed is saturated liquid.
 
+        .. todo::
+            implement component liquid flow rates (:attr:`Model.l`) throughout instead of mole fractions
 
         :param components: list of component names
         :param F: feed molar flow rate
@@ -22,6 +21,7 @@ class Model:
         :param D: distillate molar flow rate
         :param N: number of equilibrium contacts
         :param feed_stage: stage where feed is input
+        :param T_feed_guess: guess temperature for feed stage
         """
         self.flow_rate_tol = 1.e-4
         self.temperature_tol = 1.e-2
@@ -38,6 +38,7 @@ class Model:
         self.B = F - D
         self.N = N
         self.feed_stage = feed_stage
+        self.T_feed_guess = T_feed_guess
         self.K_func = {
             key: DePriester(key) for key in self.components
         }
@@ -57,6 +58,8 @@ class Model:
         # create matrices for variables
         self.L = np.zeros(self.N + 1)
         self.V = np.zeros(self.N + 1)
+        self.L_old = self.L[:]
+        self.V_old = self.V[:]
         self.L[N] = self.B
         self.V[0] = 0.  # total condenser
         self.F = np.zeros(N + 1)
@@ -64,19 +67,16 @@ class Model:
         self.z = {
             key: np.zeros(N + 1) for key in components
         }
-        self.x = {}
-        self.y = {}
+        # todo: implement component flow rates throughout
+        self.l = {
+            key: np.zeros(N + 1) for key in components
+        }
         for component in self.components:
             self.z[component][feed_stage] = self.z_feed[component]
-            self.x[component] = self.z_feed[component]*np.ones(self.N + 1)
-            self.y[component] = self.z_feed[component]*np.ones(self.N + 1)
 
-        # perform bubble point calculation on the feed
-        self.T_feed = self.calculate_T_feed()
-
-        # initialize T and K for all stages at feed temperature
-        self.T_old = self.T_feed * np.ones(self.N + 1)
-        self.T_new = self.T_feed * np.ones(self.N + 1)
+        self.T_feed = self.T_feed_guess
+        self.T = self.T_feed_guess * np.ones(self.N + 1)
+        self.T_old = self.T[:]
         self.K = {
             key: self.K_func[key].eval_SI(self.T_feed, self.P_feed)*np.ones(self.N + 1) for key in self.components
         }
@@ -98,10 +98,13 @@ class Model:
 
         where the asterisk indicates the pure component enthalpy
 
+        .. todo::
+            convert x mole fractions to dynamic expression
+
         :return: :math:`h_j` [J/kmol]
         """
         return sum(
-            self.x[c][stage]*self.h_pure_rule(c, self.T_new[stage]) for c in self.components
+            self.x[c][stage]*self.h_pure_rule(c, self.T[stage]) for c in self.components
         )
 
     def h_feed_rule(self, stage):
@@ -132,10 +135,14 @@ class Model:
             H_j = \\sum_i y_{ij}H^*_i(T_j)
 
         where the asterisk indicates the pure component enthalpy
+
+        .. todo::
+            convert y mole fractions to dynamic expression
+
         :return: :math:`H_j` [J/kmol]
         """
         return sum(
-            self.y[c][stage] * self.H_pure_rule(c, self.T_new[stage]) for c in self.components
+            self.y[c][stage] * self.H_pure_rule(c, self.T[stage]) for c in self.components
         )
 
     def Q_condenser_rule(self):
@@ -147,11 +154,20 @@ class Model:
         return self.D*self.h_j_rule(0) + self.B*self.h_j_rule(self.N) \
                - self.F_feed*self.h_feed_rule(self.feed_stage) - self.Q_condenser_rule()
 
+    def step_3_start(self):
+        """Beginning of step 3.
+        Come back here whenever not converged at step 6.
+        """
+        self.update_K_values()
+        self.solve_component_mass_balances()
+
     def run(self, num_iter=1):
-        self.initialize_CMO()
+        self.generate_initial_guess()
+        self.step_3_start()
+        self.solve_energy_balances()
         for i in range(1, num_iter + 1):
             self.solve_component_mass_balances()
-            if self.temperature_is_converged():
+            if self.T_is_converged():
                 print('temperature converged in %i iterations' % i)
                 for j in range(1, num_iter + 1):
                     converged = self.solve_energy_balances()
@@ -163,74 +179,96 @@ class Model:
 
         print('temperature did not converge in %i iterations' % num_iter)
 
-    def temperature_is_converged(self):
-        eps = np.abs(self.T_new - self.T_old)
-        if eps.max() < self.temperature_tol:
-            return True
+    def update_K_values(self):
+        """
+        .. include:: step3.rst
 
-        self.T_old = self.T_new[:]
-        return False
+        """
+        for c in self.components:
+            self.K[c][:] = self.K_func[c].eval_SI(self.T[:], self.P_feed)
 
-    def calculate_T_feed(self):
-        """Feed mixture is saturated liquid. Calculate T_feed with bubble point calculation"""
-        return bubble_point(
+        self.T_old = self.T[:]
+
+    def update_T_values(self):
+        """Update temperatures in all stages
+        by performing bubble point calculation
+
+        .. todo::
+            vectorize with matrix multiplication
+
+        .. todo::
+            convert x mole fractions to dynamic expressions
+        """
+        pass
+
+    def generate_initial_guess(self):
+        """
+        .. include:: step2.rst
+
+        """
+        # initialize temperatures as T (feed)
+        self.T_feed = bubble_point(
             [self.z_feed[i] for i in self.components],
-            [self.K_func[i].eval_SI for i in self.components], self.P_feed, 300.
+            [self.K_func[i].eval_SI for i in self.components], self.P_feed, self.T_feed_guess
         )
+        self.T[:] = self.T_feed
 
-    def initialize_CMO(self):
-        """Make initial guesses for flow rates and temperatures"""
-
-        # make matrix assuming CMO
+        # initialize L, V with CMO
         self.L[:self.feed_stage] = self.RR * self.D
         self.L[self.feed_stage:self.N] = self.RR * self.D + self.F_feed
         self.V[1:] = self.RR * self.D + self.D
 
+    def T_is_converged(self):
+        """Determine whether stage temperatures are converged.
+        Mathematically, we require the following
+
+        .. math::
+
+            \\sqrt{\\left(T_{j,\\mathrm{new}} - T_{j,\\mathrm{old}}\\right)^2} < \\epsilon
+
+        The temperature tolerance :math:`\epsilon`
+        is attribute :attr:`distillation.amundson_1958.main.Model.temperature_tol`
+
+        :return: True if T is converged, else False
+
+        """
+        eps = np.abs(self.T - self.T_old)
+        return eps.max() < self.temperature_tol
+
     def solve_component_mass_balances(self):
-        """Calculate component liquid flow rates."""
+        """Calculate component liquid flow rates.
+
+
+        .. todo: dont need to calculate D and A here as they are constant
+
+        .. todo: move second part to update_T_values method
+
+        """
+
+        # save old L, V
+        self.L_old[:] = self.L[:]
+        self.V_old[:] = self.V[:]
+
         l = {}
         for i, component in enumerate(self.components):
-            # todo: dont need to calculate D and A as these are constant
             A, B, C, D = make_ABC(
                 self.V, self.L, self.K[component], self.F, self.z[component], self.D, self.B, self.N
             )
             l[component] = solve_diagonal(A, B, C, D)
 
-        # todo: vectorize all this with matrix multiplication
         # update from old calculations
         for i in range(self.N + 1):
 
-            # update mole fractions
-            for c in self.components:
-                self.x[c][i] = l[c][i]/sum(l[c][i] for c in self.components)
 
             # calculate stage temperature now that all liquid-phase mole fractions are known
             K_vals = [self.K_func[c].eval_SI for c in self.components]
             x_vals = [self.x[c][i] for c in self.components]
-            self.T_new[i] = self.T_old[i] + self.df * (
+            self.T[i] = self.T_old[i] + self.df * (
                     bubble_point(x_vals, K_vals, self.P_feed, self.T_old[i]) - self.T_old[i]
             )
-            for c in self.components:
-                # update K
-                self.K[c][i] = self.K_func[c].eval_SI(self.T_old[i], self.P_feed)
-                # update y
-                self.y[c][i] = self.K[c][i]*self.x[c][i]
-
-        # update L
-        # for i in range(self.N + 1):
-        #     self.L[i] = sum(l[c][i] for c in self.components)
-        # calculate V from overall mass balance at each equilibrium stage
-        # self.V[self.N] = self.L[self.N-1] - self.B
-        # for i in range(self.N-1, 1):
-        #     self.V[i] = self.L[i-1] + self.V[i + 1] + self.F[i] - self.L[i]
-        # self.V[1] = self.B + self.L[0]
-        # self.V[0] = 0. # total condenser
 
     def solve_energy_balances(self):
         """Solve energy balances"""
-        V_old = self.V[:]
-        L_old = self.L[:]
-
         BE = np.zeros(self.N + 1)
         CE = np.zeros(self.N)
         DE = np.zeros(self.N + 1)
@@ -263,24 +301,91 @@ class Model:
         for i in range(self.N):
             self.L[i] = self.V[i+1] - self.D + sum(self.F[k] for k in range(i + 1))
         self.L[self.N] = self.B
-        return self.L_is_converged(L_old) and self.V_is_converged(V_old)
 
-    def L_is_converged(self, L_old):
-        eps_L = self.relative_error(self.L, L_old)
-        if eps_L.max() < self.flow_rate_tol:
-            return True
+    def flow_rates_converged(self):
+        """Determine if flow rates are converged
 
-        return False
+        Use the mathematical criterion in :meth:`Model.is_below_relative_error`
 
-    def relative_error(self, new, old):
-        return np.abs((new - old)/new)
+        """
+        return self.is_below_relative_error(self.L, self.L_old) and self.is_below_relative_error(self.V, self.V_old)
 
-    def V_is_converged(self, V_old):
-        eps_V = self.relative_error(self.V[1:], V_old[1:])
-        if eps_V.max() < self.flow_rate_tol:
-            return True
+    def is_below_relative_error(self, new, old):
+        """Determine relative error between two vectors
 
-        return False
+        .. math::
+
+            \\sqrt{\\left(\\frac{X_{\\mathrm{new}} - X_{\\mathrm{old}}}{X_{\\mathrm{new}}}\\right)^2} < \\epsilon
+
+        The flow rate tolerance, :math:`\epsilon`,
+        is found in the attribute :attr:`distillation.amundson_1958.main.Model.flow_rate_tol`
+
+        :param new:
+        :param old:
+        :rtype: bool
+
+        """
+        return np.abs((new - old)/new).max() < self.flow_rate_tol
+
+
+def make_ABC(V: np.array, L: np.array, K: np.array, F: np.array, z: np.array,
+             Distillate: float, Bottoms: float, N: int):
+    """
+    Distillation column with partial reboiler and total condenser
+
+    .. note::
+        K_j is assumed to depend on *T* and *p*, but not composition
+
+    :param V: vapor molar flow rate out of stage 0 to *N*
+    :param L: liquid molar flow rate out of stage 0 to *N*
+    :param K: equilibrium expressions for stage 0 to *N*
+    :param F: feed flow rate into stage for stage 0 to *N*
+    :param z: feed composition into stage for stage 0 to *N*
+    :param Distillate: distillate flow rate
+    :param Bottoms: bottoms flow rate
+    :param N: number of equilibrium stages
+
+    :return: A, B, C, D
+    """
+    B = np.zeros(N + 1)  # diagonal
+    A = -1 * np.ones(N)  # lower diagonal
+    C = np.zeros(N)  # upper diagonal
+    D = np.zeros(N + 1)
+
+    assert abs(V[0]) < 1e-8, 'Vapor flow rate out of total condenser is non-zero!'
+    # total condenser
+    B[0] = 1. + Distillate / L[0]
+    C[0] = -V[1] * K[1] / L[1]
+    D[0] = F[0] * z[0]
+    # reboiler
+    B[N] = 1 + V[N] * K[N] / Bottoms
+    D[N] = F[N] * z[N]
+
+    D[1:N] = F[1:N] * z[1:N]
+    B[1:N] = 1 + V[1:N] * K[1:N] / L[1:N]
+    C[1:N] = -V[2:(N + 1)] * K[2:(N + 1)] / L[2:(N + 1)]
+    return A, B, C, D
+
+
+def solve_component_mass_balances(*args):
+    """
+    Distillation column with partial reboiler and total condenser
+
+    .. note::
+        K_j is assumed to depend on *T* and *p*, but not composition
+
+    :param V: vapor molar flow rate out of stage 0 to *N*
+    :param L: liquid molar flow rate out of stage 0 to *N*
+    :param K: equilibrium expressions for stage 0 to *N*
+    :param F: feed flow rate into stage for stage 0 to *N*
+    :param z: feed composition into stage for stage 0 to *N*
+    :param Distillate: distillate flow rate
+    :param Bottoms: bottoms flow rate
+    :param N: number of equilibrium stages
+    :return: l
+    """
+    A, B, C, D = make_ABC(*args)
+    return solve_diagonal(A, B, C, D)
 
 
 if __name__ == '__main__':

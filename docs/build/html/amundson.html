@@ -91,16 +91,17 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">4. Amundson_1958</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#mathematical-trick">4.1. Mathematical Trick</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#the-algorithm">4.2. The algorithm</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#step-1">4.2.1. Step 1</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-2">4.2.2. Step 2</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-3">4.2.3. Step 3</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-4">4.2.4. Step 4</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-1-input">4.2.1. Step 1, Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-2-make-initial-guess">4.2.2. Step 2, Make Initial Guess</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-3-update-k-values">4.2.3. Step 3, Update <span class="math notranslate nohighlight">\(K\)</span>-values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-4-solve-component-mass-balances">4.2.4. Step 4, Solve Component Mass Balances</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-5">4.2.5. Step 5</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-6">4.2.6. Step 6</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-7">4.2.7. Step 7</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-8">4.2.8. Step 8</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-6-t-j-convergence-check">4.2.6. Step 6, <span class="math notranslate nohighlight">\(T_j\)</span> Convergence Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-7-solve-energy-balances">4.2.7. Step 7, Solve Energy Balances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-8-v-j-l-j-convergence-check">4.2.8. Step 8, <span class="math notranslate nohighlight">\(V_j\)</span>, <span class="math notranslate nohighlight">\(L_j\)</span> Convergence Check</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#class-method-reference">4.3. Class Method Reference</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bubble.html">5. Bubble Point</a></li>
@@ -249,8 +250,8 @@ the solution algorithm.</p>
     converg_2 [shape=diamond,label=&quot;8. Determine whether\n L, V are converged\n for all stages&quot;];
     finish [shape=ellipse,label=&quot;9. Finished&quot;];
 }" class="graphviz" /></div>
-<div class="section" id="step-1">
-<h3><span class="section-number">4.2.1. </span>Step 1<a class="headerlink" href="#step-1" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="step-1-input">
+<h3><span class="section-number">4.2.1. </span>Step 1, Input<a class="headerlink" href="#step-1-input" title="Permalink to this headline">¶</a></h3>
 <p>In Step 1, the property data and design variables are input.
 The property data is described in <a class="reference internal" href="equil.html#equil-data"><span class="std std-ref">Equilibrium Properties</span></a>.
 A model with this property data and input design variables is created
@@ -272,32 +273,32 @@ by the following code:</p>
 <p>Currently, the input design flow rates must be
 specified in kmol/h and the pressure must be specified in Pa.
 The method called in this process is
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.__init__()</span></code></p>
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.__init__()</span></code>
+(see <a class="reference internal" href="#amund-code"><span class="std std-ref">Class Method Reference</span></a>).</p>
 </div>
-<div class="section" id="step-2">
-<span id="step2"></span><h3><span class="section-number">4.2.2. </span>Step 2<a class="headerlink" href="#step-2" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="step-2-make-initial-guess">
+<span id="step2"></span><h3><span class="section-number">4.2.2. </span>Step 2, Make Initial Guess<a class="headerlink" href="#step-2-make-initial-guess" title="Permalink to this headline">¶</a></h3>
 <p>Before beginning the solution procedure,
 we need to have an initial guess for the liquid flow rates,
 vapor flow rates, and temperatures on each stage <span class="math notranslate nohighlight">\(j\)</span>.
 That is, we need to generate initial guesses for
 <span class="math notranslate nohighlight">\(L_j\)</span>, <span class="math notranslate nohighlight">\(V_j\)</span>, and <span class="math notranslate nohighlight">\(T_j\)</span>.</p>
 <p>First we calculate the feed temperature
-(specified as a saturated liquid) using
+(which is a saturated liquid) using
 a bubble point calculation (see <a class="reference internal" href="bubble.html#bubble"><span class="std std-ref">Bubble Point</span></a>).
 We set the temperatures <span class="math notranslate nohighlight">\(T_j\)</span>
 to be the same as the feed temperature.</p>
 <p>Then, we generate the initial guesses
-for these values by assuming constant molal overflow.
-The code for this step is depicted in
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.initialize_CMO()</span></code></p>
+for these values by assuming constant molal overflow.</p>
+<p>The code for this step
+is depicted in <a class="reference internal" href="#distillation.amundson_1958.main.Model.generate_initial_guess" title="distillation.amundson_1958.main.Model.generate_initial_guess"><code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.generate_initial_guess()</span></code></a>.</p>
 </div>
-<div class="section" id="step-3">
-<h3><span class="section-number">4.2.3. </span>Step 3<a class="headerlink" href="#step-3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="step-3-update-k-values">
+<h3><span class="section-number">4.2.3. </span>Step 3, Update <span class="math notranslate nohighlight">\(K\)</span>-values<a class="headerlink" href="#step-3-update-k-values" title="Permalink to this headline">¶</a></h3>
 <p>In Step 3, we calculate <span class="math notranslate nohighlight">\(K_{i,j}\)</span>, the
 <span class="math notranslate nohighlight">\(K\)</span>-value for each component <span class="math notranslate nohighlight">\(i\)</span> on stage <span class="math notranslate nohighlight">\(j\)</span>.
 We can think of this step as doing something similar to the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">stages</span><span class="p">:</span>
         <span class="n">K</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">K_func</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">T</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">p</span><span class="p">)</span>
 </pre></div>
@@ -305,11 +306,17 @@ We can think of this step as doing something similar to the following:</p>
 <p>where the <code class="code docutils literal notranslate"><span class="pre">K_func</span></code> function returns the <span class="math notranslate nohighlight">\(K\)</span>-value for component
 <span class="math notranslate nohighlight">\(i\)</span> on stage <span class="math notranslate nohighlight">\(j\)</span>.
 The <code class="code docutils literal notranslate"><span class="pre">for</span></code> loops iteratively store the <span class="math notranslate nohighlight">\(K\)</span>-values in each component of the amtrix.</p>
+<p>Behind the scenes, we then store the current stage temperatures
+in an attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">T_old</span></code> which
+we will need later in <a class="reference internal" href="#step-6"><span class="std std-ref">Step 6, T_j Convergence Check</span></a> to determine whether the temperature
+has converged.</p>
+<p>The code for this step is depicted in
+<a class="reference internal" href="#distillation.amundson_1958.main.Model.update_K_values" title="distillation.amundson_1958.main.Model.update_K_values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.update_K_values()</span></code></a>.</p>
 </div>
-<div class="section" id="step-4">
-<span id="stage-4"></span><h3><span class="section-number">4.2.4. </span>Step 4<a class="headerlink" href="#step-4" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="step-4-solve-component-mass-balances">
+<span id="stage-4"></span><h3><span class="section-number">4.2.4. </span>Step 4, Solve Component Mass Balances<a class="headerlink" href="#step-4-solve-component-mass-balances" title="Permalink to this headline">¶</a></h3>
 <p>The two stages in which tridiagonal matrices are used
-for computational efficiency are <a class="reference internal" href="#stage-4"><span class="std std-ref">Step 4</span></a> and <a class="reference internal" href="#step-7"><span class="std std-ref">Step 7</span></a>,
+for computational efficiency are <a class="reference internal" href="#stage-4"><span class="std std-ref">Step 4, Solve Component Mass Balances</span></a> and <a class="reference internal" href="#step-7"><span class="std std-ref">Step 7, Solve Energy Balances</span></a>,
 which are depicted in colored blue boxes.</p>
 <p>In this step, the matrices are tridiagonal for the complete
 mass balances for <em>each</em> component (as opposed to all components together).
@@ -322,44 +329,231 @@ In this case, the approach becomes something of the following:</p>
 <p>First, the tridiagonal matrix is generated.
 Then, the efficient approach described in <a class="reference internal" href="#tri-matrix"><span class="std std-ref">Mathematical Trick</span></a> is used.
 to solve the equations.</p>
+<p>Behind the scenes, we save the current values of <span class="math notranslate nohighlight">\(L_j\)</span>
+and <span class="math notranslate nohighlight">\(V_j\)</span> into the <code class="code docutils literal notranslate"><span class="pre">numpy</span></code> arrays
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.L_old()</span></code> and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.V_old()</span></code>,
+respectively, because we will need them
+to determine the convergence of the flow rates
+in <a class="reference internal" href="#step-7"><span class="std std-ref">Step 7, Solve Energy Balances</span></a>.</p>
 </div>
 <div class="section" id="step-5">
 <h3><span class="section-number">4.2.5. </span>Step 5<a class="headerlink" href="#step-5" title="Permalink to this headline">¶</a></h3>
-<p>In <a class="reference internal" href="#step2"><span class="std std-ref">Step 2</span></a>, we performed a <a class="reference internal" href="bubble.html#bubble"><span class="std std-ref">Bubble Point</span></a> calculation
+<p>In <a class="reference internal" href="#step2"><span class="std std-ref">Step 2, Make Initial Guess</span></a>, we performed a <a class="reference internal" href="bubble.html#bubble"><span class="std std-ref">Bubble Point</span></a> calculation
 to determine the temperature of the feed.
 We do the same thing here, except we do it multiple times
 (i.e., for each stage).</p>
 </div>
-<div class="section" id="step-6">
-<h3><span class="section-number">4.2.6. </span>Step 6<a class="headerlink" href="#step-6" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="step-6-t-j-convergence-check">
+<span id="step-6"></span><h3><span class="section-number">4.2.6. </span>Step 6, <span class="math notranslate nohighlight">\(T_j\)</span> Convergence Check<a class="headerlink" href="#step-6-t-j-convergence-check" title="Permalink to this headline">¶</a></h3>
 <p>In Step 6, we determine whether the temperatures on all stages <span class="math notranslate nohighlight">\(j\)</span>,
-<span class="math notranslate nohighlight">\(T_j\)</span>, have converged.</p>
-<p>Mathematically, we require the following</p>
-<div class="math notranslate nohighlight">
-\[\sqrt{\left(T_{j,\mathrm{new}} - T_{j,\mathrm{old}}\right)^2} &lt; \epsilon_6\]</div>
-<p>The temperature tolerance, <span class="math notranslate nohighlight">\(\epsilon_6\)</span>,
-is found in the attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.temperature_tol</span></code>.</p>
+<span class="math notranslate nohighlight">\(T_j\)</span>, have converged.
+This is performed in <a class="reference internal" href="#distillation.amundson_1958.main.Model.T_is_converged" title="distillation.amundson_1958.main.Model.T_is_converged"><code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.T_is_converged()</span></code></a></p>
 </div>
-<div class="section" id="step-7">
-<span id="id2"></span><h3><span class="section-number">4.2.7. </span>Step 7<a class="headerlink" href="#step-7" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="step-7-solve-energy-balances">
+<span id="step-7"></span><h3><span class="section-number">4.2.7. </span>Step 7, Solve Energy Balances<a class="headerlink" href="#step-7-solve-energy-balances" title="Permalink to this headline">¶</a></h3>
 <p>In Step 7, we solve the energy balances.
-Here, all the balances can be combined into one banded matrix.</p>
+Here, all the balances can again be combined into one banded matrix.</p>
 </div>
-<div class="section" id="step-8">
-<h3><span class="section-number">4.2.8. </span>Step 8<a class="headerlink" href="#step-8" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="step-8-v-j-l-j-convergence-check">
+<h3><span class="section-number">4.2.8. </span>Step 8, <span class="math notranslate nohighlight">\(V_j\)</span>, <span class="math notranslate nohighlight">\(L_j\)</span> Convergence Check<a class="headerlink" href="#step-8-v-j-l-j-convergence-check" title="Permalink to this headline">¶</a></h3>
 <p>In this step, we determine if the simulation has converged.
 If the following holds true for all stages <span class="math notranslate nohighlight">\(j\)</span></p>
 <div class="math notranslate nohighlight">
-\[\sqrt{\left(\frac{X_{j,\mathrm{new}} - X_{j,\mathrm{old}}}{X_{j,\mathrm{new}}}\right)^2} &lt; \epsilon_8\]</div>
+\[\sqrt{\left(\frac{X_{j,\mathrm{new}} - X_{j,\mathrm{old}}}{X_{j,\mathrm{new}}}\right)^2} &lt; \epsilon\]</div>
 <p>for each variable <span class="math notranslate nohighlight">\(X=V\)</span> and <span class="math notranslate nohighlight">\(X=L\)</span>.
-The relevant methods that check to see if <span class="math notranslate nohighlight">\(L\)</span> is converged and if
-<span class="math notranslate nohighlight">\(V\)</span> is converged can be found in
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.L_is_converged()</span></code> and
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.V_is_converged()</span></code>,
-respectively.</p>
-<p>The flow rate tolerance, <span class="math notranslate nohighlight">\(\epsilon_8\)</span>,
-is found in the attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.flow_rate_tol</span></code>.</p>
+The flow rate tolerance, <span class="math notranslate nohighlight">\(\epsilon\)</span>,
+is found in the attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.flow_rate_tol</span></code>.
+The code for this step is found in <a class="reference internal" href="#distillation.amundson_1958.main.Model.flow_rates_converged" title="distillation.amundson_1958.main.Model.flow_rates_converged"><code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.flow_rates_converged()</span></code></a></p>
 </div>
+</div>
+<div class="section" id="class-method-reference">
+<span id="amund-code"></span><h2><span class="section-number">4.3. </span>Class Method Reference<a class="headerlink" href="#class-method-reference" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="distillation.amundson_1958.main.Model">
+<em class="property">class </em><code class="sig-prename descclassname">distillation.amundson_1958.main.</code><code class="sig-name descname">Model</code><span class="sig-paren">(</span><em class="sig-param">components: list = None</em>, <em class="sig-param">F: float = 0.0</em>, <em class="sig-param">P: float = 101325.0</em>, <em class="sig-param">z_feed: list = None</em>, <em class="sig-param">RR: float = 1</em>, <em class="sig-param">D: float = 0</em>, <em class="sig-param">N: int = 1</em>, <em class="sig-param">feed_stage: int = 0</em>, <em class="sig-param">T_feed_guess: float = 300.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="distillation.amundson_1958.main.Model.H_j_rule">
+<code class="sig-name descname">H_j_rule</code><span class="sig-paren">(</span><em class="sig-param">stage</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.H_j_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.H_j_rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enthalpy of vapor on stage <em>j</em>.
+Calculated for ideal mixture</p>
+<div class="math notranslate nohighlight">
+\[H_j = \sum_i y_{ij}H^*_i(T_j)\]</div>
+<p>where the asterisk indicates the pure component enthalpy</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><span class="math notranslate nohighlight">\(H_j\)</span> [J/kmol]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.H_pure_rule">
+<code class="sig-name descname">H_pure_rule</code><span class="sig-paren">(</span><em class="sig-param">c</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.H_pure_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.H_pure_rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rule for vapor enthalpy of pure component</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.Q_condenser_rule">
+<code class="sig-name descname">Q_condenser_rule</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.Q_condenser_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.Q_condenser_rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Condenser requirement can be determined from balances around total condenser</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.Q_reboiler_rule">
+<code class="sig-name descname">Q_reboiler_rule</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.Q_reboiler_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.Q_reboiler_rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Condenser requirement can be determined from balances around total condenser</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.T_is_converged">
+<code class="sig-name descname">T_is_converged</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.T_is_converged"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.T_is_converged" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine whether stage temperatures are converged.
+Mathematically, we require the following</p>
+<div class="math notranslate nohighlight">
+\[\sqrt{\left(T_{j,\mathrm{new}} - T_{j,\mathrm{old}}\right)^2} &lt; \epsilon\]</div>
+<p>The temperature tolerance <span class="math notranslate nohighlight">\(\epsilon\)</span>
+is attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.temperature_tol</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if T is converged, else False</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.flow_rates_converged">
+<code class="sig-name descname">flow_rates_converged</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.flow_rates_converged"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.flow_rates_converged" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if flow rates are converged</p>
+<p>Use the mathematical criterion in <a class="reference internal" href="#distillation.amundson_1958.main.Model.is_below_relative_error" title="distillation.amundson_1958.main.Model.is_below_relative_error"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Model.is_below_relative_error()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.generate_initial_guess">
+<code class="sig-name descname">generate_initial_guess</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.generate_initial_guess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.generate_initial_guess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Before beginning the solution procedure,
+we need to have an initial guess for the liquid flow rates,
+vapor flow rates, and temperatures on each stage <span class="math notranslate nohighlight">\(j\)</span>.
+That is, we need to generate initial guesses for
+<span class="math notranslate nohighlight">\(L_j\)</span>, <span class="math notranslate nohighlight">\(V_j\)</span>, and <span class="math notranslate nohighlight">\(T_j\)</span>.</p>
+<p>First we calculate the feed temperature
+(which is a saturated liquid) using
+a bubble point calculation (see <a class="reference internal" href="bubble.html#bubble"><span class="std std-ref">Bubble Point</span></a>).
+We set the temperatures <span class="math notranslate nohighlight">\(T_j\)</span>
+to be the same as the feed temperature.</p>
+<p>Then, we generate the initial guesses
+for these values by assuming constant molal overflow.</p>
+<p>The code for this step
+is depicted in <a class="reference internal" href="#distillation.amundson_1958.main.Model.generate_initial_guess" title="distillation.amundson_1958.main.Model.generate_initial_guess"><code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.generate_initial_guess()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.h_feed_rule">
+<code class="sig-name descname">h_feed_rule</code><span class="sig-paren">(</span><em class="sig-param">stage</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.h_feed_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.h_feed_rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enthalpy of liquid in feed mixture
+Calculated for ideal mixture</p>
+<div class="math notranslate nohighlight">
+\[h = \sum_i x_{ij}h^*_i(T_j)\]</div>
+<p>where the asterisk indicates the pure component enthalpy</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><span class="math notranslate nohighlight">\(h\)</span> [J/kmol]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.h_j_rule">
+<code class="sig-name descname">h_j_rule</code><span class="sig-paren">(</span><em class="sig-param">stage</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.h_j_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.h_j_rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enthalpy of liquid on stage <em>j</em>.
+Calculated for ideal mixture</p>
+<div class="math notranslate nohighlight">
+\[h_j = \sum_i x_{ij}h^*_i(T_j)\]</div>
+<p>where the asterisk indicates the pure component enthalpy</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><span class="math notranslate nohighlight">\(h_j\)</span> [J/kmol]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.h_pure_rule">
+<code class="sig-name descname">h_pure_rule</code><span class="sig-paren">(</span><em class="sig-param">c</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.h_pure_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.h_pure_rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>rule for liquid enthalpy of pure component</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.is_below_relative_error">
+<code class="sig-name descname">is_below_relative_error</code><span class="sig-paren">(</span><em class="sig-param">new</em>, <em class="sig-param">old</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.is_below_relative_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.is_below_relative_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine relative error between two vectors</p>
+<div class="math notranslate nohighlight">
+\[\sqrt{\left(\frac{X_{\mathrm{new}} - X_{\mathrm{old}}}{X_{\mathrm{new}}}\right)^2} &lt; \epsilon\]</div>
+<p>The flow rate tolerance, <span class="math notranslate nohighlight">\(\epsilon\)</span>,
+is found in the attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.flow_rate_tol</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>new</strong> – </p></li>
+<li><p><strong>old</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.solve_component_mass_balances">
+<code class="sig-name descname">solve_component_mass_balances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.solve_component_mass_balances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.solve_component_mass_balances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate component liquid flow rates.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.solve_energy_balances">
+<code class="sig-name descname">solve_energy_balances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.solve_energy_balances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.solve_energy_balances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solve energy balances</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.step_3_start">
+<code class="sig-name descname">step_3_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.step_3_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.step_3_start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Beginning of step 3.
+Come back here whenever not converged at step 6.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.update_K_values">
+<code class="sig-name descname">update_K_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.update_K_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.update_K_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>In Step 3, we calculate <span class="math notranslate nohighlight">\(K_{i,j}\)</span>, the
+<span class="math notranslate nohighlight">\(K\)</span>-value for each component <span class="math notranslate nohighlight">\(i\)</span> on stage <span class="math notranslate nohighlight">\(j\)</span>.
+We can think of this step as doing something similar to the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">stages</span><span class="p">:</span>
+        <span class="n">K</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">K_func</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">T</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where the <code class="code docutils literal notranslate"><span class="pre">K_func</span></code> function returns the <span class="math notranslate nohighlight">\(K\)</span>-value for component
+<span class="math notranslate nohighlight">\(i\)</span> on stage <span class="math notranslate nohighlight">\(j\)</span>.
+The <code class="code docutils literal notranslate"><span class="pre">for</span></code> loops iteratively store the <span class="math notranslate nohighlight">\(K\)</span>-values in each component of the amtrix.</p>
+<p>Behind the scenes, we then store the current stage temperatures
+in an attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">T_old</span></code> which
+we will need later in <a class="reference internal" href="#step-6"><span class="std std-ref">Step 6, T_j Convergence Check</span></a> to determine whether the temperature
+has converged.</p>
+<p>The code for this step is depicted in
+<a class="reference internal" href="#distillation.amundson_1958.main.Model.update_K_values" title="distillation.amundson_1958.main.Model.update_K_values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.update_K_values()</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.update_T_values">
+<code class="sig-name descname">update_T_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.update_T_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.update_T_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update temperatures in all stages
+by performing bubble point calculation</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 </div>
 
