@@ -163,9 +163,9 @@
 <h1><span class="section-number">7. </span>modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-distillation.amundson_1958.main">
 <span id="distillation-amundson-1958"></span><h2><span class="section-number">7.1. </span>distillation/amundson_1958<a class="headerlink" href="#module-distillation.amundson_1958.main" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="module-distillation.amundson_1958.component_mass_balances"></span><dl class="function">
-<dt id="distillation.amundson_1958.component_mass_balances.make_ABC">
-<code class="sig-prename descclassname">distillation.amundson_1958.component_mass_balances.</code><code class="sig-name descname">make_ABC</code><span class="sig-paren">(</span><em class="sig-param">V: numpy.array</em>, <em class="sig-param">L: numpy.array</em>, <em class="sig-param">K: numpy.array</em>, <em class="sig-param">F: numpy.array</em>, <em class="sig-param">z: numpy.array</em>, <em class="sig-param">Distillate: float</em>, <em class="sig-param">Bottoms: float</em>, <em class="sig-param">N: int</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/component_mass_balances.html#make_ABC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.component_mass_balances.make_ABC" title="Permalink to this definition">¶</a></dt>
+<dl class="function">
+<dt id="distillation.amundson_1958.main.make_ABC">
+<code class="sig-prename descclassname">distillation.amundson_1958.main.</code><code class="sig-name descname">make_ABC</code><span class="sig-paren">(</span><em class="sig-param">V: numpy.array</em>, <em class="sig-param">L: numpy.array</em>, <em class="sig-param">K: numpy.array</em>, <em class="sig-param">F: numpy.array</em>, <em class="sig-param">z: numpy.array</em>, <em class="sig-param">Distillate: float</em>, <em class="sig-param">Bottoms: float</em>, <em class="sig-param">N: int</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#make_ABC"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.make_ABC" title="Permalink to this definition">¶</a></dt>
 <dd><p>Distillation column with partial reboiler and total condenser</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -191,8 +191,8 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="distillation.amundson_1958.component_mass_balances.solve_component_mass_balances">
-<code class="sig-prename descclassname">distillation.amundson_1958.component_mass_balances.</code><code class="sig-name descname">solve_component_mass_balances</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/component_mass_balances.html#solve_component_mass_balances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.component_mass_balances.solve_component_mass_balances" title="Permalink to this definition">¶</a></dt>
+<dt id="distillation.amundson_1958.main.solve_component_mass_balances">
+<code class="sig-prename descclassname">distillation.amundson_1958.main.</code><code class="sig-name descname">solve_component_mass_balances</code><span class="sig-paren">(</span><em class="sig-param">*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#solve_component_mass_balances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.solve_component_mass_balances" title="Permalink to this definition">¶</a></dt>
 <dd><p>Distillation column with partial reboiler and total condenser</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -222,7 +222,7 @@
 <span id="distillation-equilibrium-data"></span><h2><span class="section-number">7.2. </span>distillation/equilibrium_data<a class="headerlink" href="#module-distillation.equilibrium_data.heat_capacity_liquid" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="distillation.equilibrium_data.heat_capacity_liquid.CpL">
-<em class="property">class </em><code class="sig-prename descclassname">distillation.equilibrium_data.heat_capacity_liquid.</code><code class="sig-name descname">CpL</code><span class="sig-paren">(</span><em class="sig-param">compound_name</em>, <em class="sig-param">f_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/equilibrium_data/heat_capacity_liquid.html#CpL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.equilibrium_data.heat_capacity_liquid.CpL" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">distillation.equilibrium_data.heat_capacity_liquid.</code><code class="sig-name descname">CpL</code><span class="sig-paren">(</span><em class="sig-param">compound_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/equilibrium_data/heat_capacity_liquid.html#CpL"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.equilibrium_data.heat_capacity_liquid.CpL" title="Permalink to this definition">¶</a></dt>
 <dd><p>Heat capacities of liquids</p>
 <dl class="method">
 <dt id="distillation.equilibrium_data.heat_capacity_liquid.CpL.eval">
@@ -241,7 +241,7 @@
 
 <span class="target" id="module-distillation.equilibrium_data.heats_of_vaporization"></span><dl class="class">
 <dt id="distillation.equilibrium_data.heats_of_vaporization.dH_vap">
-<em class="property">class </em><code class="sig-prename descclassname">distillation.equilibrium_data.heats_of_vaporization.</code><code class="sig-name descname">dH_vap</code><span class="sig-paren">(</span><em class="sig-param">compound_name</em>, <em class="sig-param">f_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/equilibrium_data/heats_of_vaporization.html#dH_vap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.equilibrium_data.heats_of_vaporization.dH_vap" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">distillation.equilibrium_data.heats_of_vaporization.</code><code class="sig-name descname">dH_vap</code><span class="sig-paren">(</span><em class="sig-param">compound_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/equilibrium_data/heats_of_vaporization.html#dH_vap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.equilibrium_data.heats_of_vaporization.dH_vap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Heat of vaporization</p>
 </dd></dl>
 
@@ -251,7 +251,7 @@
 <dd><p>Heat capacities of vapor</p>
 </dd></dl>
 
-</div>
+<span class="target" id="module-distillation.equilibrium_data.critical_properties"></span></div>
 </div>
 
 

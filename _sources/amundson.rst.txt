@@ -102,8 +102,8 @@ The complete algorithm is shown in the diagram below.
         finish [shape=ellipse,label="9. Finished"];
     }
 
-Step 1
-******
+Step 1, Input
+*************
 In Step 1, the property data and design variables are input.
 The property data is described in :ref:`equil-data`.
 A model with this property data and input design variables is created
@@ -129,50 +129,25 @@ Currently, the input design flow rates must be
 specified in kmol/h and the pressure must be specified in Pa.
 The method called in this process is
 :py:meth:`distillation.amundson_1958.main.Model.__init__`
+(see :ref:`amund-code`).
+
 
 .. _step2:
 
-Step 2
-******
-Before beginning the solution procedure,
-we need to have an initial guess for the liquid flow rates,
-vapor flow rates, and temperatures on each stage :math:`j`.
-That is, we need to generate initial guesses for
-:math:`L_j`, :math:`V_j`, and :math:`T_j`.
+Step 2, Make Initial Guess
+**************************
+.. include:: step2.rst
 
-First we calculate the feed temperature
-(specified as a saturated liquid) using
-a bubble point calculation (see :ref:`bubble`).
-We set the temperatures :math:`T_j`
-to be the same as the feed temperature.
+Step 3, Update :math:`K`-values
+*******************************
 
-Then, we generate the initial guesses
-for these values by assuming constant molal overflow.
-The code for this step is depicted in
-:meth:`distillation.amundson_1958.main.Model.initialize_CMO`
-
-Step 3
-******
-In Step 3, we calculate :math:`K_{i,j}`, the
-:math:`K`-value for each component :math:`i` on stage :math:`j`.
-We can think of this step as doing something similar to the following:
-
-.. code-block:: python
-
-    import numpy as np
-    for i in components:
-        for j in stages:
-            K[i,j] = K_func(i, T[j], p)
-
-
-where the :code:`K_func` function returns the :math:`K`-value for component
-:math:`i` on stage :math:`j`.
-The :code:`for` loops iteratively store the :math:`K`-values in each component of the amtrix.
+.. include:: step3.rst
 
 .. _stage-4:
 
-Step 4
-******
+Step 4, Solve Component Mass Balances
+*************************************
+
 The two stages in which tridiagonal matrices are used
 for computational efficiency are :ref:`stage-4` and :ref:`step-7`,
 which are depicted in colored blue boxes.
@@ -191,6 +166,14 @@ First, the tridiagonal matrix is generated.
 Then, the efficient approach described in :ref:`tri-matrix` is used.
 to solve the equations.
 
+Behind the scenes, we save the current values of :math:`L_j`
+and :math:`V_j` into the :code:`numpy` arrays
+:meth:`distillation.amundson_1958.main.Model.L_old` and
+:meth:`distillation.amundson_1958.main.Model.V_old`,
+respectively, because we will need them
+to determine the convergence of the flow rates
+in :ref:`step-7`.
+
 Step 5
 ******
 
@@ -199,42 +182,39 @@ to determine the temperature of the feed.
 We do the same thing here, except we do it multiple times
 (i.e., for each stage).
 
-Step 6
-******
+.. _step-6:
+
+Step 6, :math:`T_j` Convergence Check
+*************************************
 In Step 6, we determine whether the temperatures on all stages :math:`j`,
 :math:`T_j`, have converged.
-
-Mathematically, we require the following
-
-.. math::
-
-    \sqrt{\left(T_{j,\mathrm{new}} - T_{j,\mathrm{old}}\right)^2} < \epsilon_6
-
-The temperature tolerance, :math:`\epsilon_6`,
-is found in the attribute :attr:`distillation.amundson_1958.main.Model.temperature_tol`.
+This is performed in :meth:`distillation.amundson_1958.main.Model.T_is_converged`
 
 .. _step-7:
 
-Step 7
-******
+Step 7, Solve Energy Balances
+*****************************
 In Step 7, we solve the energy balances.
-Here, all the balances can be combined into one banded matrix.
+Here, all the balances can again be combined into one banded matrix.
 
-Step 8
-******
+Step 8, :math:`V_j`, :math:`L_j` Convergence Check
+**************************************************
 In this step, we determine if the simulation has converged.
 If the following holds true for all stages :math:`j`
 
 .. math::
 
-    \sqrt{\left(\frac{X_{j,\mathrm{new}} - X_{j,\mathrm{old}}}{X_{j,\mathrm{new}}}\right)^2} < \epsilon_8
+    \sqrt{\left(\frac{X_{j,\mathrm{new}} - X_{j,\mathrm{old}}}{X_{j,\mathrm{new}}}\right)^2} < \epsilon
 
 for each variable :math:`X=V` and :math:`X=L`.
-The relevant methods that check to see if :math:`L` is converged and if
-:math:`V` is converged can be found in
-:meth:`distillation.amundson_1958.main.Model.L_is_converged` and
-:meth:`distillation.amundson_1958.main.Model.V_is_converged`,
-respectively.
-
-The flow rate tolerance, :math:`\epsilon_8`,
+The flow rate tolerance, :math:`\epsilon`,
 is found in the attribute :attr:`distillation.amundson_1958.main.Model.flow_rate_tol`.
+The code for this step is found in :meth:`distillation.amundson_1958.main.Model.flow_rates_converged`
+
+.. _amund-code:
+
+Class Method Reference
+----------------------
+
+.. autoclass:: distillation.amundson_1958.main.Model
+    :members:

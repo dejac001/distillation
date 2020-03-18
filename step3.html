@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Python Module Index &mdash; distillation 0.1 documentation</title>
+  <title>&lt;no title&gt; &mdash; distillation 0.1 documentation</title>
   
 
   
@@ -37,10 +37,7 @@
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
- 
-
-
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -138,10 +135,14 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Python Module Index</li>
+      <li>&lt;no title&gt;</li>
     
     
       <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/step3.rst.txt" rel="nofollow"> View page source</a>
+          
         
       </li>
     
@@ -153,64 +154,23 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-
-   <h1>Python Module Index</h1>
-
-   <div class="modindex-jumpbox">
-   <a href="#cap-d"><strong>d</strong></a>
-   </div>
-
-   <table class="indextable modindextable">
-     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
-     <tr class="cap" id="cap-d"><td></td><td>
-       <strong>d</strong></td><td></td></tr>
-     <tr>
-       <td><img src="_static/minus.png" class="toggler"
-              id="toggle-1" style="display: none" alt="-" /></td>
-       <td>
-       <code class="xref">distillation</code></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="modules.html#module-distillation.amundson_1958.main"><code class="xref">distillation.amundson_1958.main</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="bubble.html#module-distillation.bubble_point"><code class="xref">distillation.bubble_point</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="bubble.html#module-distillation.bubble_point.calculation"><code class="xref">distillation.bubble_point.calculation</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="modules.html#module-distillation.equilibrium_data.critical_properties"><code class="xref">distillation.equilibrium_data.critical_properties</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="modules.html#module-distillation.equilibrium_data.depriester_charts"><code class="xref">distillation.equilibrium_data.depriester_charts</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="modules.html#module-distillation.equilibrium_data.heat_capacity_liquid"><code class="xref">distillation.equilibrium_data.heat_capacity_liquid</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="modules.html#module-distillation.equilibrium_data.heat_capacity_vapor"><code class="xref">distillation.equilibrium_data.heat_capacity_vapor</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="modules.html#module-distillation.equilibrium_data.heats_of_vaporization"><code class="xref">distillation.equilibrium_data.heats_of_vaporization</code></a></td><td>
-       <em></em></td></tr>
-   </table>
+  <p>In Step 3, we calculate <span class="math notranslate nohighlight">\(K_{i,j}\)</span>, the
+<span class="math notranslate nohighlight">\(K\)</span>-value for each component <span class="math notranslate nohighlight">\(i\)</span> on stage <span class="math notranslate nohighlight">\(j\)</span>.
+We can think of this step as doing something similar to the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">stages</span><span class="p">:</span>
+        <span class="n">K</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">K_func</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">T</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">p</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where the <code class="code docutils literal notranslate"><span class="pre">K_func</span></code> function returns the <span class="math notranslate nohighlight">\(K\)</span>-value for component
+<span class="math notranslate nohighlight">\(i\)</span> on stage <span class="math notranslate nohighlight">\(j\)</span>.
+The <code class="code docutils literal notranslate"><span class="pre">for</span></code> loops iteratively store the <span class="math notranslate nohighlight">\(K\)</span>-values in each component of the amtrix.</p>
+<p>Behind the scenes, we then store the current stage temperatures
+in an attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">T_old</span></code> which
+we will need later in <a class="reference internal" href="amundson.html#step-6"><span class="std std-ref">Step 6, T_j Convergence Check</span></a> to determine whether the temperature
+has converged.</p>
+<p>The code for this step is depicted in
+<a class="reference internal" href="amundson.html#distillation.amundson_1958.main.Model.update_K_values" title="distillation.amundson_1958.main.Model.update_K_values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.update_K_values()</span></code></a>.</p>
 
 
            </div>
