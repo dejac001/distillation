@@ -38,20 +38,17 @@ class Model:
         self.B = F - D
         self.N = N
         self.feed_stage = feed_stage
-        file = os.path.join('..', '..', 'distillation', 'equilibrium_data', 'depriester.csv')
         self.K_func = {
-            key: DePriester(key, file) for key in self.components
+            key: DePriester(key) for key in self.components
         }
-        file = os.path.join('..', '..', 'distillation', 'equilibrium_data', 'heat_capacity_liquid.csv')
         self.CpL_func = {
-            key: CpL(key, file) for key in self.components
+            key: CpL(key) for key in self.components
         }
         self.CpV_func = {
             key: CpV() for key in self.components
         }
-        file = os.path.join('..', '..', 'distillation', 'equilibrium_data', 'heats_of_vaporization.csv')
         self.dH_func = {
-            key: dH_vap(key, file) for key in self.components
+            key: dH_vap(key) for key in self.components
         }
         self.T_ref = {
             key: val.T_ref for key, val in self.dH_func.items()
@@ -96,10 +93,12 @@ class Model:
         Calculated for ideal mixture
 
         .. math::
-            h_j = \sum_i x_{ij}\overbar{h}_i(T_j)
 
-        where the overbar indicates the pure component enthalpy
-        units of J/kmol
+            h_j = \\sum_i x_{ij}h^*_i(T_j)
+
+        where the asterisk indicates the pure component enthalpy
+
+        :return: :math:`h_j` [J/kmol]
         """
         return sum(
             self.x[c][stage]*self.h_pure_rule(c, self.T_new[stage]) for c in self.components
@@ -110,10 +109,12 @@ class Model:
         Calculated for ideal mixture
 
         .. math::
-            h_j = \sum_i x_{ij}\overbar{h}_i(T_j)
 
-        where the overbar indicates the pure component enthalpy
-        units of J/kmol
+            h = \\sum_i x_{ij}h^*_i(T_j)
+
+        where the asterisk indicates the pure component enthalpy
+
+        :return: :math:`h` [J/kmol]
         """
         return sum(
            self.z[c][stage]*self.h_pure_rule(c, self.T_feed) for c in self.components
@@ -128,10 +129,10 @@ class Model:
         Calculated for ideal mixture
 
         .. math::
-            H_j = \sum_i y_{ij}\overbar{H}_i(T_j)
+            H_j = \\sum_i y_{ij}H^*_i(T_j)
 
-        where the overbar indicates the pure component enthalpy
-        units of J/kmol
+        where the asterisk indicates the pure component enthalpy
+        :return: :math:`H_j` [J/kmol]
         """
         return sum(
             self.y[c][stage] * self.H_pure_rule(c, self.T_new[stage]) for c in self.components

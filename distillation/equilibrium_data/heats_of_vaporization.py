@@ -1,8 +1,10 @@
 class dH_vap:
     """Heat of vaporization"""
-    def __init__(self, compound_name, f_name):
+    def __init__(self, compound_name):
+        from distillation import os, ROOT_DIR
+        file = os.path.join(ROOT_DIR, 'equilibrium_data', 'heats_of_vaporization.csv')
         self.units = 'J/kmol'
-        with open(f_name, 'r') as f:
+        with open(file, 'r') as f:
             header = next(f).rstrip('\n').split(',')
             for line in f:
                 vals = line.rstrip('\n').split(',')

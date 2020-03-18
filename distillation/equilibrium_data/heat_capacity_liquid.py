@@ -1,9 +1,11 @@
 class CpL:
     """Heat capacities of liquids"""
-    def __init__(self, compound_name, f_name):
+    def __init__(self, compound_name):
+        from distillation import os, ROOT_DIR
+        file = os.path.join(ROOT_DIR, 'equilibrium_data', 'heat_capacity_liquid.csv')
         self.num_constants = 5
         self.units = 'J/kmol/K'
-        with open(f_name, 'r') as f:
+        with open(file, 'r') as f:
             header = next(f).rstrip('\n').split(',')
             for line in f:
                 vals = line.rstrip('\n').split(',')
@@ -25,7 +27,8 @@ class CpL:
     def integral_dT(self, T_ref, T):
         """
         .. math::
-            \int_{Tref}^T CpL dT
+
+            \\int_{Tref}^T CpL dT
 
         """
         return self.integral(T) - self.integral(T_ref)

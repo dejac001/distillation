@@ -12,7 +12,9 @@ def read_chart(f_name):
 
 
 class DePriester:
-    def __init__(self, compound, f_name):
+    def __init__(self, compound):
+        from distillation import ROOT_DIR, os
+        f_name = os.path.join(ROOT_DIR, 'equilibrium_data', 'depriester.csv')
         data = read_chart(f_name)
         assert compound in data.keys(), 'Compound not found!'
         my_data = data[compound]
@@ -44,8 +46,8 @@ class DePriester:
         :param p: pressure in Pa
         :return: K-value for component at specific *T* and *p*
         """
-        from unit_conversions.temperature import Kelvin_to_Rankine
-        from unit_conversions.pressure import Paa_to_psia
+        from distillation.unit_conversions.temperature import Kelvin_to_Rankine
+        from distillation.unit_conversions.pressure import Paa_to_psia
         return self.eval(
             Kelvin_to_Rankine(T), Paa_to_psia(p)
         )
