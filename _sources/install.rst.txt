@@ -1,9 +1,7 @@
 Installation
 ============
-After downloading the source code,
-the dependencies can be installed by
-navigating to the outer directory and typing
+This package can be installed by the following
 
 .. code::
 
-    pip install -r requirements.txt
+    pip install distillation

@@ -163,11 +163,63 @@ That is, we need to generate initial guesses for
 (which is a saturated liquid) using
 a bubble point calculation (see <a class="reference internal" href="bubble.html#bubble"><span class="std std-ref">Bubble Point</span></a>).
 We set the temperatures <span class="math notranslate nohighlight">\(T_j\)</span>
-to be the same as the feed temperature.</p>
+to be the same as the feed temperature.
+This step is performed automatically when the model
+is initialized with input parameters.
+We can check to see the feed temperature calculated
+for our model by the following</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">T_feed</span>
+<span class="go">306.37018410667076</span>
+</pre></div>
+</div>
 <p>Then, we generate the initial guesses
-for these values by assuming constant molal overflow.</p>
-<p>The code for this step
-is depicted in <a class="reference internal" href="amundson.html#distillation.amundson_1958.main.Model.generate_initial_guess" title="distillation.amundson_1958.main.Model.generate_initial_guess"><code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.generate_initial_guess()</span></code></a>.</p>
+for these values by assuming constant molal overflow (the Lewis method).
+Computationally, we can do this using the following</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">generate_initial_guess</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We can then check the arrays of liquid flow rates (<span class="math notranslate nohighlight">\(L\)</span>)
+and vapor flow rates (<span class="math notranslate nohighlight">\(V\)</span>) obtained by the calculations as below</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">L</span>
+<span class="go">array([ 400.,  400., 1400.,  600.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">V</span>
+<span class="go">array([   0., 800., 800., 800.])</span>
+</pre></div>
+</div>
+<p>or, looking at the liquid flow rates by stage more specifically,
+.. code-block:: python</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">stage</span><span class="p">,</span> <span class="n">L_j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">L</span><span class="p">):</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;L_j&#39;</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">L_j</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">L_j 0 400.0</span>
+<span class="go">L_j 1 400.0</span>
+<span class="go">L_j 2 1400.0</span>
+<span class="go">L_j 3 600.0</span>
+</pre></div>
+</div>
+<p>Here, we see that the liquid flow rates in the enriching
+section are <span class="math notranslate nohighlight">\((L/D)\\timesD=1\\times400=400=L\)</span>.
+Since the feed stage is stage 2, we notice that
+the liquid leaving this stage is equal to <span class="math notranslate nohighlight">\(\\bar{L}=L + F=400 + 1000\)</span>.
+Finally, we notice that the liquid leaving the bottom stage,
+the partial reboiler, is the same as the bottoms
+flow rate that would be calculated from an overall balance,
+<span class="math notranslate nohighlight">\(B = F - D = 1000 - 400 = 600\)</span>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">stage</span><span class="p">,</span> <span class="n">V_j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">V</span><span class="p">):</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;V_j&#39;</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">V_j</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">V_j 0 0.0</span>
+<span class="go">V_j 1 800.0</span>
+<span class="go">V_j 2 800.0</span>
+<span class="go">V_j 3 800.0</span>
+</pre></div>
+</div>
+<p>We note that there is no vapor leaving stage 0 because the
+column is equipped with a total condensor.
+We note that <code class="code docutils literal notranslate"><span class="pre">V[1]</span> <span class="pre">=</span> <span class="pre">model.RR*model.D</span> <span class="pre">+</span> <span class="pre">model.D</span></code>,
+which arises from the mass balance at the top of the column.
+Similarly, we also realize that
+<code class="code docutils literal notranslate"><span class="pre">V[3]</span> <span class="pre">=</span> <span class="pre">model.L[2]</span> <span class="pre">-</span> <span class="pre">model.B</span></code>.</p>
 
 
            </div>

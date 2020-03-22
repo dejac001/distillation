@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>1. About &mdash; distillation 0.1 documentation</title>
+  <title>&lt;no title&gt; &mdash; distillation 0.1 documentation</title>
   
 
   
@@ -35,11 +35,9 @@
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
-    <link rel="author" title="About these documents" href="#" />
+    <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="2. Installation" href="install.html" />
-    <link rel="prev" title="Welcome to distillation’s documentation!" href="index.html" /> 
+    <link rel="search" title="Search" href="search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -84,8 +82,8 @@
             
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">1. About</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="about.html">1. About</a></li>
 <li class="toctree-l1"><a class="reference internal" href="install.html">2. Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="balances.html">3. Material and Energy Balances</a></li>
 <li class="toctree-l1"><a class="reference internal" href="amundson.html">4. Amundson_1958</a></li>
@@ -137,13 +135,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li><span class="section-number">1. </span>About</li>
+      <li>&lt;no title&gt;</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/about.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/temp-converge.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -156,30 +154,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="about">
-<h1><span class="section-number">1. </span>About<a class="headerlink" href="#about" title="Permalink to this headline">¶</a></h1>
-<p>Perform a calculation for distillation of mixtures
-of chemical compounds.</p>
-<a class="reference internal image-reference" href="_images/column_diagram.png"><img alt="_images/column_diagram.png" class="align-center" src="_images/column_diagram.png" style="width: 300px;" /></a>
-<p>Currently only supports configurations with total condensers and partial reboilers.
-Equilibrium data currently only comes from DePriester charts
-and is assumed to only depend on pressure and temperature.</p>
-</div>
+  <p>In this step, we determine whether the temperatures on all stages <span class="math notranslate nohighlight">\(j\)</span>,
+<span class="math notranslate nohighlight">\(T_j\)</span>, have converged.
+Mathematically, we require the following</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\\sqrt{\\left(T_{j,\\mathrm{new}} - T_{j,\\mathrm{old}}\\right)^2} &lt; \\epsilon\end{split}\]</div>
+<p>The temperature tolerance <span class="math notranslate nohighlight">\(\epsilon\)</span>
+is attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.temperature_tol</span></code>;
+It is currently set to 0.01.</p>
 
 
            </div>
            
           </div>
           <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="install.html" class="btn btn-neutral float-right" title="2. Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to distillation’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
-    </div>
   
 
   <hr/>

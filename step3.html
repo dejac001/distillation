@@ -156,15 +156,29 @@
             
   <p>In Step 3, we calculate <span class="math notranslate nohighlight">\(K_{i,j}\)</span>, the
 <span class="math notranslate nohighlight">\(K\)</span>-value for each component <span class="math notranslate nohighlight">\(i\)</span> on stage <span class="math notranslate nohighlight">\(j\)</span>.
-We can think of this step as doing something similar to the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
-    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">stages</span><span class="p">:</span>
-        <span class="n">K</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">K_func</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">T</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">p</span><span class="p">)</span>
+We can do this now for our model by the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">update_K_values</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We can think of this step as doing something similar to the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">K_func</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">T</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">model</span><span class="o">.</span><span class="n">P_feed</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>where the <code class="code docutils literal notranslate"><span class="pre">K_func</span></code> function returns the <span class="math notranslate nohighlight">\(K\)</span>-value for component
 <span class="math notranslate nohighlight">\(i\)</span> on stage <span class="math notranslate nohighlight">\(j\)</span>.
 The <code class="code docutils literal notranslate"><span class="pre">for</span></code> loops iteratively store the <span class="math notranslate nohighlight">\(K\)</span>-values in each component of the amtrix.</p>
+<p>In our example, we can checkout our new <span class="math notranslate nohighlight">\(K\)</span>-values as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pprint</span>  <span class="c1"># for pretty printing</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">K</span><span class="p">)</span>
+<span class="go">{&#39;n-Butane&#39;: array([1.61320297, 1.61320297, 1.61320297, 1.61320297]),</span>
+<span class="go"> &#39;n-Pentane&#39;: array([0.49828848, 0.49828848, 0.49828848, 0.49828848])}</span>
+</pre></div>
+</div>
+<p>As expected, the values for butane are higher for the light component, butane.
+The values are also the same for all stages because the temperature
+of all stages are currently fixed at the feed temperature.</p>
 <p>Behind the scenes, we then store the current stage temperatures
 in an attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">T_old</span></code> which
 we will need later in <a class="reference internal" href="amundson.html#step-6"><span class="std std-ref">Step 6, T_j Convergence Check</span></a> to determine whether the temperature
