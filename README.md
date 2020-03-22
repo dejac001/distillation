@@ -6,7 +6,7 @@ of chemical compounds.
 <p align="center"> 
     <img 
         src="distillation/column_diagram.png" 
-        width="200"
+        width="300"
     />
 </p>
 
