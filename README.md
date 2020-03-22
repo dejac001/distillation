@@ -5,7 +5,7 @@ of chemical compounds.
 
 <img 
     src="distillation/column_diagram.png" 
-    align="middle"
+    align="center"
     width="200"
 />
 
@@ -16,9 +16,7 @@ and is assumed to only depend on pressure and temperature.
 
 Documentation
 =============
-The online documentation can be found here_.
-
-.. _here: https://dejac001.github.io/distillation/
+The online documentation can be found [](https://dejac001.github.io/distillation "here").
 
 Contributing
 ============
