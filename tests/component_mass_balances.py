@@ -19,7 +19,6 @@ class MyTestCase(unittest.TestCase):
             [0.2, 0.35, 0.45],
             1.5, 550., 3, 2
         )
-        cls.run()
         import numpy as np
         x_Wankat = {
             'n-Butane': np.array([0.497, 0.228, 0.096, 0.020]),
@@ -33,11 +32,22 @@ class MyTestCase(unittest.TestCase):
         }
         T_Wankat = np.array([32. + 273., 44.8 + 273., 67.2 + 273., 103.4 + 273.])
 
-        for key in cls.x.keys():
-            self.assertLess(np.linalg.norm(cls.y[key]-y_Wankat[key]), 1.5)
-            self.assertLess(np.linalg.norm(cls.x[key]-x_Wankat[key]), 1.52)
+        cls.generate_initial_guess()
+        cls.update_K_values()
+        for i in cls.components:
+            cls.solve_component_mass_bal(i)
+        cls.update_T_values()
+        x = {
+            key: np.array([cls.x_ij_expr(key, i) for i in cls.stages]) for key in cls.components
+        }
+        y = {
+            key: np.array([cls.y_ij_expr(key, i) for i in cls.stages]) for key in cls.components
+        }
+        for key in x.keys():
+            self.assertLess(np.linalg.norm(y[key]-y_Wankat[key]), 1.5)
+            self.assertLess(np.linalg.norm(x[key]-x_Wankat[key]), 1.52)
 
-        self.assertLess(np.linalg.norm(T_Wankat - cls.T_old), 1.)
+        self.assertLess(np.linalg.norm(T_Wankat - cls.T), 1.)
 
 
 if __name__ == '__main__':

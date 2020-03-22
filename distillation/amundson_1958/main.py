@@ -5,8 +5,9 @@ import numpy as np
 
 
 class Model:
-    def __init__(self, components: list=None, F: float=0., P: float=101325.,
-                 z_feed: list=None, RR: float=1, D: float=0, N: int=1, feed_stage: int=0, T_feed_guess: float=300.):
+    def __init__(self, components: list = None, F: float = 0., P: float = 101325.,
+                 z_feed: list = None, RR: float = 1, D: float = 0, N: int = 1, feed_stage: int = 0,
+                 T_feed_guess: float = 300.):
         """Distillation column with partial reboiler and total condenser.
         Feed is saturated liquid.
 
@@ -56,29 +57,32 @@ class Model:
         }
 
         # create matrices for variables
-        self.L = np.zeros(self.N + 1)
-        self.V = np.zeros(self.N + 1)
-        self.L_old = self.L[:]
-        self.V_old = self.V[:]
+        self.num_stages = self.N + 1
+        self.stages = range(self.num_stages)
+        self.L = np.zeros(self.num_stages)
+        self.V = np.zeros(self.num_stages)
+        self.L_old = np.zeros(self.num_stages)
+        self.V_old = np.zeros(self.num_stages)
         self.L[N] = self.B
         self.V[0] = 0.  # total condenser
-        self.F = np.zeros(N + 1)
+        self.F = np.zeros(self.num_stages)
         self.F[self.feed_stage] = self.F_feed
         self.z = {
-            key: np.zeros(N + 1) for key in components
+            key: np.zeros(self.num_stages) for key in components
         }
         # todo: implement component flow rates throughout
         self.l = {
-            key: np.zeros(N + 1) for key in components
+            key: np.zeros(self.num_stages) for key in components
         }
         for component in self.components:
             self.z[component][feed_stage] = self.z_feed[component]
 
         self.T_feed = self.T_feed_guess
-        self.T = self.T_feed_guess * np.ones(self.N + 1)
-        self.T_old = self.T[:]
+        self.T = self.T_feed_guess * np.ones(self.num_stages)
+        self.T_old = np.zeros(self.num_stages)
         self.K = {
-            key: self.K_func[key].eval_SI(self.T_feed, self.P_feed)*np.ones(self.N + 1) for key in self.components
+            key: self.K_func[key].eval_SI(self.T_feed, self.P_feed) * np.ones(self.num_stages) for key in
+            self.components
         }
 
         # solver parameters
@@ -98,14 +102,20 @@ class Model:
 
         where the asterisk indicates the pure component enthalpy
 
-        .. todo::
-            convert x mole fractions to dynamic expression
-
         :return: :math:`h_j` [J/kmol]
         """
         return sum(
-            self.x[c][stage]*self.h_pure_rule(c, self.T[stage]) for c in self.components
+            self.x_ij_expr(c, stage) * self.h_pure_rule(c, self.T[stage]) for c in self.components
         )
+
+    def x_ij_expr(self, i, j):
+        """
+
+        :param i: component name
+        :param j: stage number
+        :return: mole fraction on stage
+        """
+        return self.l[i][j] / self.L[j]
 
     def h_feed_rule(self, stage):
         """Enthalpy of liquid in feed mixture
@@ -120,7 +130,7 @@ class Model:
         :return: :math:`h` [J/kmol]
         """
         return sum(
-           self.z[c][stage]*self.h_pure_rule(c, self.T_feed) for c in self.components
+            self.z[c][stage] * self.h_pure_rule(c, self.T_feed) for c in self.components
         )
 
     def H_pure_rule(self, c, T):
@@ -142,42 +152,49 @@ class Model:
         :return: :math:`H_j` [J/kmol]
         """
         return sum(
-            self.y[c][stage] * self.H_pure_rule(c, self.T[stage]) for c in self.components
+            self.y_ij_expr(c, stage) * self.H_pure_rule(c, self.T[stage]) for c in self.components
         )
+
+    def y_ij_expr(self, i, j):
+        """
+
+        :param i: component name
+        :param j: stage number
+        :return: gas-phase mole fraction on stage
+        """
+        return self.K_func[i].eval_SI(self.T[j], self.P_feed) * self.x_ij_expr(i, j)
 
     def Q_condenser_rule(self):
         """Condenser requirement can be determined from balances around total condenser"""
         return self.D * (1. + self.RR) * (self.h_j_rule(0) - self.H_j_rule(1))
 
     def Q_reboiler_rule(self):
-        """Condenser requirement can be determined from balances around total condenser"""
-        return self.D*self.h_j_rule(0) + self.B*self.h_j_rule(self.N) \
-               - self.F_feed*self.h_feed_rule(self.feed_stage) - self.Q_condenser_rule()
+        return self.D * self.h_j_rule(0) + self.B * self.h_j_rule(self.N) \
+               - self.F_feed * self.h_feed_rule(self.feed_stage) - self.Q_condenser_rule()
 
-    def step_3_start(self):
-        """Beginning of step 3.
-        Come back here whenever not converged at step 6.
-        """
-        self.update_K_values()
-        self.solve_component_mass_balances()
+    def step_3_to_step_6(self):
+        num_iter = 0
+        while not self.T_is_converged():
+            self.update_K_values()
+            for i in self.components:
+                self.solve_component_mass_bal(i)
+            self.update_T_values()
+            num_iter += 1
+        print('while loop exits with %i iterations' % num_iter)
 
-    def run(self, num_iter=1):
+    def run(self):
         self.generate_initial_guess()
-        self.step_3_start()
+        self.step_3_to_step_6()
         self.solve_energy_balances()
-        for i in range(1, num_iter + 1):
-            self.solve_component_mass_balances()
-            if self.T_is_converged():
-                print('temperature converged in %i iterations' % i)
-                for j in range(1, num_iter + 1):
-                    converged = self.solve_energy_balances()
-                    if converged:
-                        print('flow rates converged in %i iterations' % i)
-
-                print('flow ratesdid not converge in %i iterations' % num_iter)
-                return
-
-        print('temperature did not converge in %i iterations' % num_iter)
+        main_loop = 0
+        while not self.flow_rates_converged():
+            for i in self.components:
+                self.solve_component_mass_bal(i)
+            self.update_T_values()
+            self.step_3_to_step_6()
+            self.solve_energy_balances()
+            main_loop += 1
+            print(main_loop)
 
     def update_K_values(self):
         """
@@ -187,7 +204,7 @@ class Model:
         for c in self.components:
             self.K[c][:] = self.K_func[c].eval_SI(self.T[:], self.P_feed)
 
-        self.T_old = self.T[:]
+        self.T_old[:] = self.T[:]
 
     def update_T_values(self):
         """Update temperatures in all stages
@@ -196,10 +213,16 @@ class Model:
         .. todo::
             vectorize with matrix multiplication
 
-        .. todo::
-            convert x mole fractions to dynamic expressions
         """
-        pass
+        # update from old calculations
+        for i in range(self.num_stages):
+            # calculate stage temperature now that all liquid-phase mole fractions are known
+            K_vals = [self.K_func[c].eval_SI for c in self.components]
+            l_total = sum(self.l[c][i] for c in self.components)
+            x_vals = [self.l[c][i] / l_total for c in self.components]
+            self.T[i] = self.T_old[i] + self.df * (
+                    bubble_point(x_vals, K_vals, self.P_feed, self.T_old[i]) - self.T_old[i]
+            )
 
     def generate_initial_guess(self):
         """
@@ -219,87 +242,75 @@ class Model:
         self.V[1:] = self.RR * self.D + self.D
 
     def T_is_converged(self):
-        """Determine whether stage temperatures are converged.
-        Mathematically, we require the following
+        """
+        .. include:: temp-converge.rst
 
-        .. math::
-
-            \\sqrt{\\left(T_{j,\\mathrm{new}} - T_{j,\\mathrm{old}}\\right)^2} < \\epsilon
-
-        The temperature tolerance :math:`\epsilon`
-        is attribute :attr:`distillation.amundson_1958.main.Model.temperature_tol`
 
         :return: True if T is converged, else False
-
         """
         eps = np.abs(self.T - self.T_old)
         return eps.max() < self.temperature_tol
 
-    def solve_component_mass_balances(self):
-        """Calculate component liquid flow rates.
+    def solve_component_mass_bal(self, component):
+        """Solve component mass balances
 
-
-        .. todo: dont need to calculate D and A here as they are constant
-
-        .. todo: move second part to update_T_values method
+        .. todo:
+            dont need to calculate D and A here as they are constant
 
         """
+        A, B, C, D = make_ABC(
+            self.V, self.L, self.K[component], self.F, self.z[component], self.D, self.B, self.N
+        )
+        self.l[component][:] = solve_diagonal(A, B, C, D)
 
-        # save old L, V
-        self.L_old[:] = self.L[:]
-        self.V_old[:] = self.V[:]
+    def update_flow_rates(self):
+        for i in self.stages:
+            self.L[i] = sum(self.l[c][i] for c in self.components)
 
-        l = {}
-        for i, component in enumerate(self.components):
-            A, B, C, D = make_ABC(
-                self.V, self.L, self.K[component], self.F, self.z[component], self.D, self.B, self.N
-            )
-            l[component] = solve_diagonal(A, B, C, D)
-
-        # update from old calculations
-        for i in range(self.N + 1):
-
-
-            # calculate stage temperature now that all liquid-phase mole fractions are known
-            K_vals = [self.K_func[c].eval_SI for c in self.components]
-            x_vals = [self.x[c][i] for c in self.components]
-            self.T[i] = self.T_old[i] + self.df * (
-                    bubble_point(x_vals, K_vals, self.P_feed, self.T_old[i]) - self.T_old[i]
-            )
+        self.V[0] = 0.  # total condenser
+        self.V[1] = (self.RR + 1.) * self.D
+        for i in range(2, self.num_stages):
+            self.V[i] = self.L[i - 1] + self.D - sum(self.F[k] for k in range(i))
 
     def solve_energy_balances(self):
         """Solve energy balances"""
-        BE = np.zeros(self.N + 1)
-        CE = np.zeros(self.N)
-        DE = np.zeros(self.N + 1)
+
+        self.L_old[:] = self.L[:]
+        self.V_old[:] = self.V[:]
+
+        BE = np.zeros(self.num_stages)
+        CE = np.zeros(self.num_stages)
+        DE = np.zeros(self.num_stages)
 
         # total condenser
         BE[0] = 0.
         CE[0] = self.h_j_rule(0) - self.H_j_rule(1)
-        DE[0] = self.F[0]*self.h_feed_rule(0) + self.Q_condenser_rule()
-
-        # partial reboiler
-        BE[self.N] = self.H_j_rule(self.N) - self.H_j_rule(self.N-1)
-        DE[self.N] = self.F[self.N]*self.h_feed_rule(self.N) + self.Q_reboiler_rule() \
-                     + self.B*(self.h_j_rule(self.N-1)-self.h_j_rule(self.N)) \
-                     - self.F[self.N-1]*self.h_j_rule(self.N-1)
+        DE[0] = self.F[0] * self.h_feed_rule(0) + self.Q_condenser_rule()
 
         # stages 1 to N-1
-        BE[1:self.N] = list(self.H_j_rule(j) - self.h_j_rule(j-1) for j in range(1, self.N))
-        CE[1:self.N] = list(self.h_j_rule(j) - self.H_j_rule(j+1) for j in range(1, self.N))
-        DE[1:self.N] = list(self.F[j]*self.h_feed_rule(j) + self.D*(self.h_j_rule(j-1) - self.h_j_rule(j))
-                        - sum(self.F[k] for k in range(j+1))*self.h_j_rule(j)
-                        + sum(self.F[k] for k in range(j))*self.h_j_rule(j-1)
-                        for j in range(1, self.N))
+        for j in range(1, self.N):
+            BE[j] = self.H_j_rule(j) - self.h_j_rule(j - 1)
+            CE[j] = self.h_j_rule(j) - self.H_j_rule(j + 1)
+            DE[j] = self.F[j] * self.h_feed_rule(j) - self.D * (self.h_j_rule(j - 1) - self.h_j_rule(j)) \
+                    - sum(self.F[k] for k in range(j + 1)) * self.h_j_rule(j) \
+                    + sum(self.F[k] for k in range(j)) * self.h_j_rule(j - 1)
+
+        # partial reboiler
+        BE[self.N] = self.H_j_rule(self.N) - self.h_j_rule(self.N - 1)
+        DE[self.N] = self.F[self.N] * self.h_feed_rule(self.N) + self.Q_reboiler_rule() \
+                     - self.B * (self.h_j_rule(self.N - 1) - self.h_j_rule(self.N)) \
+                     - self.F[self.N - 1] * self.h_j_rule(self.N - 1)
+
         A = diags(
-            diagonals=[BE[1:], CE[1:]],
+            diagonals=[BE[1:], CE[1:-1]],
             offsets=[0, 1],
             shape=(self.N, self.N),
             format='csr'
         )
         self.V[1:] = linalg.spsolve(A, DE[1:])
-        for i in range(self.N):
-            self.L[i] = self.V[i+1] - self.D + sum(self.F[k] for k in range(i + 1))
+        self.L[0] = self.RR * self.D
+        for i in range(1, self.N):
+            self.L[i] = self.V[i + 1] - self.D + sum(self.F[k] for k in range(i + 1))
         self.L[self.N] = self.B
 
     def flow_rates_converged(self):
@@ -308,7 +319,8 @@ class Model:
         Use the mathematical criterion in :meth:`Model.is_below_relative_error`
 
         """
-        return self.is_below_relative_error(self.L, self.L_old) and self.is_below_relative_error(self.V, self.V_old)
+        return self.is_below_relative_error(self.L, self.L_old) and self.is_below_relative_error(self.V[1:],
+                                                                                                 self.V_old[1:])
 
     def is_below_relative_error(self, new, old):
         """Determine relative error between two vectors
@@ -325,7 +337,7 @@ class Model:
         :rtype: bool
 
         """
-        return np.abs((new - old)/new).max() < self.flow_rate_tol
+        return np.abs((new - old) / new).max() < self.flow_rate_tol
 
 
 def make_ABC(V: np.array, L: np.array, K: np.array, F: np.array, z: np.array,

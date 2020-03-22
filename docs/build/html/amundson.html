@@ -90,18 +90,20 @@
 <li class="toctree-l1"><a class="reference internal" href="balances.html">3. Material and Energy Balances</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">4. Amundson_1958</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#mathematical-trick">4.1. Mathematical Trick</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#the-algorithm">4.2. The algorithm</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#step-1-input">4.2.1. Step 1, Input</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-2-make-initial-guess">4.2.2. Step 2, Make Initial Guess</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-3-update-k-values">4.2.3. Step 3, Update <span class="math notranslate nohighlight">\(K\)</span>-values</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-4-solve-component-mass-balances">4.2.4. Step 4, Solve Component Mass Balances</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-5">4.2.5. Step 5</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-6-t-j-convergence-check">4.2.6. Step 6, <span class="math notranslate nohighlight">\(T_j\)</span> Convergence Check</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-7-solve-energy-balances">4.2.7. Step 7, Solve Energy Balances</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-8-v-j-l-j-convergence-check">4.2.8. Step 8, <span class="math notranslate nohighlight">\(V_j\)</span>, <span class="math notranslate nohighlight">\(L_j\)</span> Convergence Check</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-algorithm">4.2. The algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#tutorial">4.3. Tutorial</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#step-1-input">4.3.1. Step 1, Input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-2-make-initial-guess">4.3.2. Step 2, Make Initial Guess</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-3-update-k-values">4.3.3. Step 3, Update <span class="math notranslate nohighlight">\(K\)</span>-values</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-4-solve-component-mass-balances">4.3.4. Step 4, Solve Component Mass Balances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-5">4.3.5. Step 5</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-6-t-j-convergence-check">4.3.6. Step 6, <span class="math notranslate nohighlight">\(T_j\)</span> Convergence Check</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-7-solve-energy-balances">4.3.7. Step 7, Solve Energy Balances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-8-v-j-l-j-convergence-check">4.3.8. Step 8, <span class="math notranslate nohighlight">\(V_j\)</span>, <span class="math notranslate nohighlight">\(L_j\)</span> Convergence Check</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#class-method-reference">4.3. Class Method Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#putting-it-all-together">4.4. Putting it all together</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#class-method-reference">4.5. Class Method Reference</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="bubble.html">5. Bubble Point</a></li>
@@ -250,24 +252,27 @@ the solution algorithm.</p>
     converg_2 [shape=diamond,label=&quot;8. Determine whether\n L, V are converged\n for all stages&quot;];
     finish [shape=ellipse,label=&quot;9. Finished&quot;];
 }" class="graphviz" /></div>
+</div>
+<div class="section" id="tutorial">
+<h2><span class="section-number">4.3. </span>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="step-1-input">
-<h3><span class="section-number">4.2.1. </span>Step 1, Input<a class="headerlink" href="#step-1-input" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">4.3.1. </span>Step 1, Input<a class="headerlink" href="#step-1-input" title="Permalink to this headline">¶</a></h3>
 <p>In Step 1, the property data and design variables are input.
 The property data is described in <a class="reference internal" href="equil.html#equil-data"><span class="std std-ref">Equilibrium Properties</span></a>.
 A model with this property data and input design variables is created
 by the following code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">distillation.model.amundson_1958.main</span> <span class="kn">import</span> <span class="n">Model</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">distillation.amundson_1958</span> <span class="kn">import</span> <span class="n">Model</span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
-    <span class="n">components</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;n-Butane&#39;</span><span class="p">,</span> <span class="s1">&#39;n-Pentane&#39;</span><span class="p">],</span>
-    <span class="n">F</span><span class="o">=</span><span class="mf">1000.</span><span class="p">,</span>              <span class="c1"># feed flow rate [kmol/h]</span>
-    <span class="n">P</span><span class="o">=</span><span class="mf">101325.</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span>          <span class="c1"># pressure (constant) [Pa]</span>
-    <span class="n">z_feed</span><span class="o">=</span><span class="p">[</span><span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.55</span><span class="p">],</span>  <span class="c1"># mole fraction n-Butane = 0.45</span>
-    <span class="n">RR</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>                <span class="c1"># reflux ratio [L/D]</span>
-    <span class="n">D</span><span class="o">=</span><span class="mf">500.</span><span class="p">,</span>               <span class="c1"># distillate flow rate [kmol/h]</span>
-    <span class="n">N</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>                  <span class="c1"># number of equilibrium contacts</span>
-    <span class="n">feed_stage</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>         <span class="c1"># stage at which feed goes in</span>
-<span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+<span class="go">        components=[&#39;n-Butane&#39;, &#39;n-Pentane&#39;],</span>
+<span class="go">        F=1000.,              # feed flow rate [kmol/h]</span>
+<span class="go">        P=101325.*2,          # pressure (constant) [Pa]</span>
+<span class="go">        z_feed=[0.45, 0.55],  # mole fraction n-Butane = 0.45</span>
+<span class="go">        RR=1.,                # reflux ratio [L/D]</span>
+<span class="go">        D=400.,               # distillate flow rate [kmol/h]</span>
+<span class="go">        N=3,                  # number of equilibrium contacts</span>
+<span class="go">        feed_stage=2,         # stage at which feed goes in</span>
+<span class="go">)</span>
 </pre></div>
 </div>
 <p>Currently, the input design flow rates must be
@@ -277,7 +282,7 @@ The method called in this process is
 (see <a class="reference internal" href="#amund-code"><span class="std std-ref">Class Method Reference</span></a>).</p>
 </div>
 <div class="section" id="step-2-make-initial-guess">
-<span id="step2"></span><h3><span class="section-number">4.2.2. </span>Step 2, Make Initial Guess<a class="headerlink" href="#step-2-make-initial-guess" title="Permalink to this headline">¶</a></h3>
+<span id="step2"></span><h3><span class="section-number">4.3.2. </span>Step 2, Make Initial Guess<a class="headerlink" href="#step-2-make-initial-guess" title="Permalink to this headline">¶</a></h3>
 <p>Before beginning the solution procedure,
 we need to have an initial guess for the liquid flow rates,
 vapor flow rates, and temperatures on each stage <span class="math notranslate nohighlight">\(j\)</span>.
@@ -287,25 +292,91 @@ That is, we need to generate initial guesses for
 (which is a saturated liquid) using
 a bubble point calculation (see <a class="reference internal" href="bubble.html#bubble"><span class="std std-ref">Bubble Point</span></a>).
 We set the temperatures <span class="math notranslate nohighlight">\(T_j\)</span>
-to be the same as the feed temperature.</p>
+to be the same as the feed temperature.
+This step is performed automatically when the model
+is initialized with input parameters.
+We can check to see the feed temperature calculated
+for our model by the following</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">T_feed</span>
+<span class="go">306.37018410667076</span>
+</pre></div>
+</div>
 <p>Then, we generate the initial guesses
-for these values by assuming constant molal overflow.</p>
-<p>The code for this step
-is depicted in <a class="reference internal" href="#distillation.amundson_1958.main.Model.generate_initial_guess" title="distillation.amundson_1958.main.Model.generate_initial_guess"><code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.generate_initial_guess()</span></code></a>.</p>
+for these values by assuming constant molal overflow (the Lewis method).
+Computationally, we can do this using the following</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">generate_initial_guess</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We can then check the arrays of liquid flow rates (<span class="math notranslate nohighlight">\(L\)</span>)
+and vapor flow rates (<span class="math notranslate nohighlight">\(V\)</span>) obtained by the calculations as below</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">L</span>
+<span class="go">array([ 400.,  400., 1400.,  600.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">V</span>
+<span class="go">array([   0., 800., 800., 800.])</span>
+</pre></div>
+</div>
+<p>or, looking at the liquid flow rates by stage more specifically,
+.. code-block:: python</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">stage</span><span class="p">,</span> <span class="n">L_j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">L</span><span class="p">):</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;L_j&#39;</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">L_j</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">L_j 0 400.0</span>
+<span class="go">L_j 1 400.0</span>
+<span class="go">L_j 2 1400.0</span>
+<span class="go">L_j 3 600.0</span>
+</pre></div>
+</div>
+<p>Here, we see that the liquid flow rates in the enriching
+section are <span class="math notranslate nohighlight">\((L/D)\\timesD=1\\times400=400=L\)</span>.
+Since the feed stage is stage 2, we notice that
+the liquid leaving this stage is equal to <span class="math notranslate nohighlight">\(\\bar{L}=L + F=400 + 1000\)</span>.
+Finally, we notice that the liquid leaving the bottom stage,
+the partial reboiler, is the same as the bottoms
+flow rate that would be calculated from an overall balance,
+<span class="math notranslate nohighlight">\(B = F - D = 1000 - 400 = 600\)</span>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">stage</span><span class="p">,</span> <span class="n">V_j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">V</span><span class="p">):</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;V_j&#39;</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">V_j</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">V_j 0 0.0</span>
+<span class="go">V_j 1 800.0</span>
+<span class="go">V_j 2 800.0</span>
+<span class="go">V_j 3 800.0</span>
+</pre></div>
+</div>
+<p>We note that there is no vapor leaving stage 0 because the
+column is equipped with a total condensor.
+We note that <code class="code docutils literal notranslate"><span class="pre">V[1]</span> <span class="pre">=</span> <span class="pre">model.RR*model.D</span> <span class="pre">+</span> <span class="pre">model.D</span></code>,
+which arises from the mass balance at the top of the column.
+Similarly, we also realize that
+<code class="code docutils literal notranslate"><span class="pre">V[3]</span> <span class="pre">=</span> <span class="pre">model.L[2]</span> <span class="pre">-</span> <span class="pre">model.B</span></code>.</p>
 </div>
 <div class="section" id="step-3-update-k-values">
-<h3><span class="section-number">4.2.3. </span>Step 3, Update <span class="math notranslate nohighlight">\(K\)</span>-values<a class="headerlink" href="#step-3-update-k-values" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">4.3.3. </span>Step 3, Update <span class="math notranslate nohighlight">\(K\)</span>-values<a class="headerlink" href="#step-3-update-k-values" title="Permalink to this headline">¶</a></h3>
 <p>In Step 3, we calculate <span class="math notranslate nohighlight">\(K_{i,j}\)</span>, the
 <span class="math notranslate nohighlight">\(K\)</span>-value for each component <span class="math notranslate nohighlight">\(i\)</span> on stage <span class="math notranslate nohighlight">\(j\)</span>.
-We can think of this step as doing something similar to the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
-    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">stages</span><span class="p">:</span>
-        <span class="n">K</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">K_func</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">T</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">p</span><span class="p">)</span>
+We can do this now for our model by the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">update_K_values</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We can think of this step as doing something similar to the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">K_func</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">T</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">model</span><span class="o">.</span><span class="n">P_feed</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>where the <code class="code docutils literal notranslate"><span class="pre">K_func</span></code> function returns the <span class="math notranslate nohighlight">\(K\)</span>-value for component
 <span class="math notranslate nohighlight">\(i\)</span> on stage <span class="math notranslate nohighlight">\(j\)</span>.
 The <code class="code docutils literal notranslate"><span class="pre">for</span></code> loops iteratively store the <span class="math notranslate nohighlight">\(K\)</span>-values in each component of the amtrix.</p>
+<p>In our example, we can checkout our new <span class="math notranslate nohighlight">\(K\)</span>-values as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pprint</span>  <span class="c1"># for pretty printing</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">K</span><span class="p">)</span>
+<span class="go">{&#39;n-Butane&#39;: array([1.61320297, 1.61320297, 1.61320297, 1.61320297]),</span>
+<span class="go"> &#39;n-Pentane&#39;: array([0.49828848, 0.49828848, 0.49828848, 0.49828848])}</span>
+</pre></div>
+</div>
+<p>As expected, the values for butane are higher for the light component, butane.
+The values are also the same for all stages because the temperature
+of all stages are currently fixed at the feed temperature.</p>
 <p>Behind the scenes, we then store the current stage temperatures
 in an attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">T_old</span></code> which
 we will need later in <a class="reference internal" href="#step-6"><span class="std std-ref">Step 6, T_j Convergence Check</span></a> to determine whether the temperature
@@ -314,61 +385,234 @@ has converged.</p>
 <a class="reference internal" href="#distillation.amundson_1958.main.Model.update_K_values" title="distillation.amundson_1958.main.Model.update_K_values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.update_K_values()</span></code></a>.</p>
 </div>
 <div class="section" id="step-4-solve-component-mass-balances">
-<span id="stage-4"></span><h3><span class="section-number">4.2.4. </span>Step 4, Solve Component Mass Balances<a class="headerlink" href="#step-4-solve-component-mass-balances" title="Permalink to this headline">¶</a></h3>
+<span id="stage-4"></span><h3><span class="section-number">4.3.4. </span>Step 4, Solve Component Mass Balances<a class="headerlink" href="#step-4-solve-component-mass-balances" title="Permalink to this headline">¶</a></h3>
 <p>The two stages in which tridiagonal matrices are used
 for computational efficiency are <a class="reference internal" href="#stage-4"><span class="std std-ref">Step 4, Solve Component Mass Balances</span></a> and <a class="reference internal" href="#step-7"><span class="std std-ref">Step 7, Solve Energy Balances</span></a>,
 which are depicted in colored blue boxes.</p>
 <p>In this step, the matrices are tridiagonal for the complete
 mass balances for <em>each</em> component (as opposed to all components together).
-In this case, the approach becomes something of the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
-    <span class="n">A</span> <span class="o">=</span> <span class="n">generate_A_matrix</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">solve</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+The variables that are calculated are <span class="math notranslate nohighlight">\(l_{ij}\)</span> for each component <span class="math notranslate nohighlight">\(i\)</span>
+and each stage <span class="math notranslate nohighlight">\(j\)</span>.
+This new variable is introduced where <span class="math notranslate nohighlight">\(l_{ij}=x_iL_j\)</span>,
+and can be interpreted as a <em>component</em> flow rate.
+By formulating the mass balance equations into function of <span class="math notranslate nohighlight">\(l_{ij}\)</span>
+the system of equations can be converted in to a tridiagonal matrix.
+Computationally, we can perform this step
+using our model by the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+<span class="gp">... </span>   <span class="n">model</span><span class="o">.</span><span class="n">solve_component_mass_bal</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">&gt;&gt;&gt;</span>
 </pre></div>
 </div>
 <p>First, the tridiagonal matrix is generated.
 Then, the efficient approach described in <a class="reference internal" href="#tri-matrix"><span class="std std-ref">Mathematical Trick</span></a> is used.
 to solve the equations.</p>
-<p>Behind the scenes, we save the current values of <span class="math notranslate nohighlight">\(L_j\)</span>
-and <span class="math notranslate nohighlight">\(V_j\)</span> into the <code class="code docutils literal notranslate"><span class="pre">numpy</span></code> arrays
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.L_old()</span></code> and
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.V_old()</span></code>,
-respectively, because we will need them
-to determine the convergence of the flow rates
-in <a class="reference internal" href="#step-7"><span class="std std-ref">Step 7, Solve Energy Balances</span></a>.</p>
+<p>We can see the results of the calculation by probing
+the model attributes as follows</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pprint</span> <span class="c1"># pretty printing</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">l</span><span class="p">)</span>
+<span class="go">{&#39;n-Butane&#39;: array([288.88918652, 179.07801532, 507.65007098, 161.11081348]),</span>
+<span class="go"> &#39;n-Pentane&#39;: array([ 74.88288594, 150.28018773, 790.77762525, 475.11711406])}</span>
+</pre></div>
+</div>
+<p>Since <span class="math notranslate nohighlight">\(\sum_i l_{i,j} = L_j\)</span>, it is worthwhile to compare
+our calculations to what was calculated for <span class="math notranslate nohighlight">\(L_j\)</span> with the
+Lewis method (i.e. assuming Constant Molal Overflow)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">stage</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">stages</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">stage</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">L</span><span class="p">[</span><span class="n">stage</span><span class="p">],</span> <span class="n">model</span><span class="o">.</span><span class="n">l</span><span class="p">[</span><span class="s1">&#39;n-Butane&#39;</span><span class="p">][</span><span class="n">stage</span><span class="p">]</span><span class="o">+</span><span class="n">model</span><span class="o">.</span><span class="n">l</span><span class="p">[</span><span class="s1">&#39;n-Pentane&#39;</span><span class="p">][</span><span class="n">stage</span><span class="p">])</span>
+<span class="gp">...</span>
+<span class="go">0 400.0 363.7720724598715</span>
+<span class="go">1 400.0 329.3582030449366</span>
+<span class="go">2 1400.0 1298.4276962288486</span>
+<span class="go">3 600.0 636.2279275401286</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>From this analysis, we realize that our initial guess for the liquid and vapor flow rates was not that bad.</p>
 </div>
 <div class="section" id="step-5">
-<h3><span class="section-number">4.2.5. </span>Step 5<a class="headerlink" href="#step-5" title="Permalink to this headline">¶</a></h3>
+<span id="id2"></span><h3><span class="section-number">4.3.5. </span>Step 5<a class="headerlink" href="#step-5" title="Permalink to this headline">¶</a></h3>
 <p>In <a class="reference internal" href="#step2"><span class="std std-ref">Step 2, Make Initial Guess</span></a>, we performed a <a class="reference internal" href="bubble.html#bubble"><span class="std std-ref">Bubble Point</span></a> calculation
 to determine the temperature of the feed.
 We do the same thing here, except we do it multiple times
-(i.e., for each stage).</p>
+(i.e., for each stage).
+However, we have not calculated the liquid phase mole fractions
+explicitly yet.
+We can use the liquid component mass balances calculated in <a class="reference internal" href="#stage-4"><span class="std std-ref">Step 4, Solve Component Mass Balances</span></a>
+to calculate the mole fractions as</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}x_{ij} = \\frac{l_{ij}}{\sum_k l_{kj}}\end{split}\]</div>
+<p>and then perform the <a class="reference internal" href="bubble.html#bubble"><span class="std std-ref">Bubble Point</span></a> calculations
+with these mole fractions.</p>
+<p>Computationally, we can perform this step with our
+model using the following</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">T</span>
+<span class="go">array([306.37018411, 306.37018411, 306.37018411, 306.37018411])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">update_T_values</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">T</span>
+<span class="go">array([295.34137166 302.94861315 308.72858323 314.97039634])</span>
+</pre></div>
+</div>
+<p>And we can see how the temperatures change from the initial guess (the feed temperature)
+to the results of the first calculation.</p>
 </div>
 <div class="section" id="step-6-t-j-convergence-check">
-<span id="step-6"></span><h3><span class="section-number">4.2.6. </span>Step 6, <span class="math notranslate nohighlight">\(T_j\)</span> Convergence Check<a class="headerlink" href="#step-6-t-j-convergence-check" title="Permalink to this headline">¶</a></h3>
-<p>In Step 6, we determine whether the temperatures on all stages <span class="math notranslate nohighlight">\(j\)</span>,
+<span id="step-6"></span><h3><span class="section-number">4.3.6. </span>Step 6, <span class="math notranslate nohighlight">\(T_j\)</span> Convergence Check<a class="headerlink" href="#step-6-t-j-convergence-check" title="Permalink to this headline">¶</a></h3>
+<p>In this step, we determine whether the temperatures on all stages <span class="math notranslate nohighlight">\(j\)</span>,
 <span class="math notranslate nohighlight">\(T_j\)</span>, have converged.
-This is performed in <a class="reference internal" href="#distillation.amundson_1958.main.Model.T_is_converged" title="distillation.amundson_1958.main.Model.T_is_converged"><code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.T_is_converged()</span></code></a></p>
+Mathematically, we require the following</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\\sqrt{\\left(T_{j,\\mathrm{new}} - T_{j,\\mathrm{old}}\\right)^2} &lt; \\epsilon\end{split}\]</div>
+<p>The temperature tolerance <span class="math notranslate nohighlight">\(\epsilon\)</span>
+is attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.temperature_tol</span></code>;
+It is currently set to 0.01.</p>
+<p>We can see from <a class="reference internal" href="#step-5"><span class="std std-ref">Step 5</span></a> that the temperature
+has clearly changed by more than 0.01~K between
+the first iteration. When we perform this step,
+we find that the temperature has not converged.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">T_is_converged</span><span class="p">()</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>Following the algorithmic diagram,
+we go back to Step 3 and perform a few more iterations.</p>
+<p>Its convenient to perform these iterations with a while loop, as follows
+.. code-block:: python</p>
+<blockquote>
+<div><p>while not model.T_is_converged():
+…     model.update_K_values()
+…     for i in model.components:
+…         model.solve_component_mass_bal(i)
+…     model.update_T_values()
+…     print(model.T)
+…
+[295.50131711 303.41982848 309.35773209 315.96224522]
+[295.6166139  303.62102821 309.52271272 316.15309479]
+[295.65094925 303.67756389 309.56508571 316.19923696]
+[295.66006297 303.69238402 309.57598554 316.21097278]
+[295.66242518 303.69621481 309.57879188 316.21398756]</p>
+</div></blockquote>
+<p>The temperature is converged after 5 more iterations,
+as we can see from the output above.
+Since the temperature has converged,
+we can now proceed to the next step.</p>
 </div>
 <div class="section" id="step-7-solve-energy-balances">
-<span id="step-7"></span><h3><span class="section-number">4.2.7. </span>Step 7, Solve Energy Balances<a class="headerlink" href="#step-7-solve-energy-balances" title="Permalink to this headline">¶</a></h3>
+<span id="step-7"></span><h3><span class="section-number">4.3.7. </span>Step 7, Solve Energy Balances<a class="headerlink" href="#step-7-solve-energy-balances" title="Permalink to this headline">¶</a></h3>
 <p>In Step 7, we solve the energy balances.
 Here, all the balances can again be combined into one banded matrix.</p>
+<p>For a general stage <span class="math notranslate nohighlight">\(j\)</span>,
+the energy balance is</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}L_j h_j + V_jH_j = V_{j+1}H_{j+1} + L_{j-1}h_{j-1} + F_j h_{j,\\mathrm{feed}} + Q_j\end{split}\]</div>
+<p>The liquid flow rates can be substituted in using the following relationship</p>
+<div class="math notranslate nohighlight">
+\[L_k = V_{k+1} - D + \sum_{m=0}^k F_m\]</div>
+<p>So that the system of equations only becomes functions of <span class="math notranslate nohighlight">\(V_j\)</span> and <span class="math notranslate nohighlight">\(V_{j+1}\)</span>.</p>
+<p>A helper function for creation and solution of these
+matrices is provided in the model.
+In other words, the energy balances can be solved
+by the following code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">L</span>
+<span class="go">array([ 400.,  400., 1400.,  600.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">V</span>
+<span class="go">array([  0., 800., 800., 800.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">solve_energy_balances</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">L</span>
+<span class="go">array([ 400.        ,  312.3605968 , 1300.10206406,  600.        ])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">V</span>
+<span class="go">array([  0.        , 730.64500782, 712.3605968 , 700.10206406])</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>Where we have added extra steps so that we can check the
+values of <code class="code docutils literal notranslate"><span class="pre">model.L</span></code> and <code class="code docutils literal notranslate"><span class="pre">model.V</span></code> before
+and after solving the energy balances.</p>
 </div>
 <div class="section" id="step-8-v-j-l-j-convergence-check">
-<h3><span class="section-number">4.2.8. </span>Step 8, <span class="math notranslate nohighlight">\(V_j\)</span>, <span class="math notranslate nohighlight">\(L_j\)</span> Convergence Check<a class="headerlink" href="#step-8-v-j-l-j-convergence-check" title="Permalink to this headline">¶</a></h3>
+<h3><span class="section-number">4.3.8. </span>Step 8, <span class="math notranslate nohighlight">\(V_j\)</span>, <span class="math notranslate nohighlight">\(L_j\)</span> Convergence Check<a class="headerlink" href="#step-8-v-j-l-j-convergence-check" title="Permalink to this headline">¶</a></h3>
 <p>In this step, we determine if the simulation has converged.
 If the following holds true for all stages <span class="math notranslate nohighlight">\(j\)</span></p>
 <div class="math notranslate nohighlight">
-\[\sqrt{\left(\frac{X_{j,\mathrm{new}} - X_{j,\mathrm{old}}}{X_{j,\mathrm{new}}}\right)^2} &lt; \epsilon\]</div>
+\[\begin{split}\\sqrt{\\left(\\frac{X_{j,\\mathrm{new}} - X_{j,\\mathrm{old}}}{X_{j,\\mathrm{new}}}\\right)^2} &lt; \\epsilon\end{split}\]</div>
 <p>for each variable <span class="math notranslate nohighlight">\(X=V\)</span> and <span class="math notranslate nohighlight">\(X=L\)</span>.
 The flow rate tolerance, <span class="math notranslate nohighlight">\(\epsilon\)</span>,
 is found in the attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.flow_rate_tol</span></code>.
 The code for this step is found in <a class="reference internal" href="#distillation.amundson_1958.main.Model.flow_rates_converged" title="distillation.amundson_1958.main.Model.flow_rates_converged"><code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.flow_rates_converged()</span></code></a></p>
+<p>Obviously, our flow rates have not converged after just one iteration,
+as we have seen that several values have changed by <span class="math notranslate nohighlight">\(\\approx 100\)</span> kmol/h.
+We will need to come up with a looping algorithm to
+get the simulation to converge, as described in the next section.</p>
 </div>
+</div>
+<div class="section" id="putting-it-all-together">
+<h2><span class="section-number">4.4. </span>Putting it all together<a class="headerlink" href="#putting-it-all-together" title="Permalink to this headline">¶</a></h2>
+<p>So far, we can combine our code from the tutorial into
+the following</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">distillation.amundson_1958</span> <span class="kn">import</span> <span class="n">Model</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+<span class="go">        components=[&#39;n-Butane&#39;, &#39;n-Pentane&#39;],</span>
+<span class="go">        F=1000.,              # feed flow rate [kmol/h]</span>
+<span class="go">        P=101325.*2,          # pressure (constant) [Pa]</span>
+<span class="go">        z_feed=[0.45, 0.55],  # mole fraction n-Butane = 0.45</span>
+<span class="go">        RR=1.,                # reflux ratio [L/D]</span>
+<span class="go">        D=400.,               # distillate flow rate [kmol/h]</span>
+<span class="go">        N=3,                  # number of equilibrium contacts</span>
+<span class="go">        feed_stage=2,         # stage at which feed goes in</span>
+<span class="go">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">generate_initial_guess</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">while</span> <span class="ow">not</span> <span class="n">model</span><span class="o">.</span><span class="n">T_is_converged</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="n">model</span><span class="o">.</span><span class="n">update_K_values</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">model</span><span class="o">.</span><span class="n">solve_component_mass_bal</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">model</span><span class="o">.</span><span class="n">update_T_values</span><span class="p">()</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">solve_energy_balances</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>But we need to figure out how to do the last iteration to automatically try to converge.
+It turns out, we can do this with a nested <code class="code docutils literal notranslate"><span class="pre">while</span></code> loop,
+as shown below</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">while</span> <span class="ow">not</span> <span class="n">model</span><span class="o">.</span><span class="n">flow_rates_converged</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">model</span><span class="o">.</span><span class="n">solve_component_mass_bal</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">model</span><span class="o">.</span><span class="n">update_T_values</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="k">while</span> <span class="ow">not</span> <span class="n">model</span><span class="o">.</span><span class="n">T_is_converged</span><span class="p">():</span>
+<span class="gp">... </span>        <span class="n">model</span><span class="o">.</span><span class="n">update_K_values</span><span class="p">()</span>
+<span class="gp">... </span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+<span class="gp">... </span>            <span class="n">model</span><span class="o">.</span><span class="n">solve_component_mass_bal</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="gp">... </span>        <span class="n">model</span><span class="o">.</span><span class="n">update_T_values</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">model</span><span class="o">.</span><span class="n">solve_energy_balances</span><span class="p">()</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>This is what happens when the user invokes <code class="code docutils literal notranslate"><span class="pre">model.run()</span></code>
+For our example, it turns out that it takes about 4 loops
+through the step 4-8 loop, and then we will be converged.
+The final results for the flow rates can be calculated as</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">L</span>
+<span class="go">array([ 400.        ,  353.80944637, 1340.92773179,  600.        ])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">V</span>
+<span class="go">array([  0.        , 733.53885641, 753.80944637, 740.92773179])</span>
+</pre></div>
+</div>
+<p>which is still quite similar to what we calculated by the Lewis method.
+We can also take a look at the stage temperatures and mole fractions
+as below</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">T</span>
+<span class="go">array([295.60405689, 303.58875055, 309.37291267, 315.8254746 ])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">x_ij_expr</span><span class="p">(</span><span class="s1">&#39;n-Butane&#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">stages</span><span class="p">)</span>
+<span class="go">[0.7648435805973592, 0.5587863474554224, 0.38180690272177853, 0.24010427960176078]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">y_ij_expr</span><span class="p">(</span><span class="s1">&#39;n-Butane&#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">stages</span><span class="p">)</span>
+<span class="go">[0.902879383384724, 0.8342045394354831, 0.6681268674620511, 0.4965317369291433]</span>
+</pre></div>
+</div>
+<p>As expected, the distillate is greatly enriched in the light component (n-Butane).</p>
 </div>
 <div class="section" id="class-method-reference">
-<span id="amund-code"></span><h2><span class="section-number">4.3. </span>Class Method Reference<a class="headerlink" href="#class-method-reference" title="Permalink to this headline">¶</a></h2>
+<span id="amund-code"></span><h2><span class="section-number">4.5. </span>Class Method Reference<a class="headerlink" href="#class-method-reference" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="distillation.amundson_1958.main.Model">
 <em class="property">class </em><code class="sig-prename descclassname">distillation.amundson_1958.main.</code><code class="sig-name descname">Model</code><span class="sig-paren">(</span><em class="sig-param">components: list = None</em>, <em class="sig-param">F: float = 0.0</em>, <em class="sig-param">P: float = 101325.0</em>, <em class="sig-param">z_feed: list = None</em>, <em class="sig-param">RR: float = 1</em>, <em class="sig-param">D: float = 0</em>, <em class="sig-param">N: int = 1</em>, <em class="sig-param">feed_stage: int = 0</em>, <em class="sig-param">T_feed_guess: float = 300.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model" title="Permalink to this definition">¶</a></dt>
@@ -380,7 +624,7 @@ Calculated for ideal mixture</p>
 <div class="math notranslate nohighlight">
 \[H_j = \sum_i y_{ij}H^*_i(T_j)\]</div>
 <p>where the asterisk indicates the pure component enthalpy</p>
-<div class="admonition-todo admonition" id="id2">
+<div class="admonition-todo admonition" id="id3">
 <p class="admonition-title">Todo</p>
 <p>convert y mole fractions to dynamic expression</p>
 </div>
@@ -404,20 +648,16 @@ Calculated for ideal mixture</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="distillation.amundson_1958.main.Model.Q_reboiler_rule">
-<code class="sig-name descname">Q_reboiler_rule</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.Q_reboiler_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.Q_reboiler_rule" title="Permalink to this definition">¶</a></dt>
-<dd><p>Condenser requirement can be determined from balances around total condenser</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="distillation.amundson_1958.main.Model.T_is_converged">
 <code class="sig-name descname">T_is_converged</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.T_is_converged"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.T_is_converged" title="Permalink to this definition">¶</a></dt>
-<dd><p>Determine whether stage temperatures are converged.
+<dd><p>In this step, we determine whether the temperatures on all stages <span class="math notranslate nohighlight">\(j\)</span>,
+<span class="math notranslate nohighlight">\(T_j\)</span>, have converged.
 Mathematically, we require the following</p>
 <div class="math notranslate nohighlight">
-\[\sqrt{\left(T_{j,\mathrm{new}} - T_{j,\mathrm{old}}\right)^2} &lt; \epsilon\]</div>
+\[\begin{split}\\sqrt{\\left(T_{j,\\mathrm{new}} - T_{j,\\mathrm{old}}\\right)^2} &lt; \\epsilon\end{split}\]</div>
 <p>The temperature tolerance <span class="math notranslate nohighlight">\(\epsilon\)</span>
-is attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.temperature_tol</span></code></p>
+is attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.temperature_tol</span></code>;
+It is currently set to 0.01.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>True if T is converged, else False</p>
@@ -444,11 +684,63 @@ That is, we need to generate initial guesses for
 (which is a saturated liquid) using
 a bubble point calculation (see <a class="reference internal" href="bubble.html#bubble"><span class="std std-ref">Bubble Point</span></a>).
 We set the temperatures <span class="math notranslate nohighlight">\(T_j\)</span>
-to be the same as the feed temperature.</p>
+to be the same as the feed temperature.
+This step is performed automatically when the model
+is initialized with input parameters.
+We can check to see the feed temperature calculated
+for our model by the following</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">T_feed</span>
+<span class="go">306.37018410667076</span>
+</pre></div>
+</div>
 <p>Then, we generate the initial guesses
-for these values by assuming constant molal overflow.</p>
-<p>The code for this step
-is depicted in <a class="reference internal" href="#distillation.amundson_1958.main.Model.generate_initial_guess" title="distillation.amundson_1958.main.Model.generate_initial_guess"><code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.generate_initial_guess()</span></code></a>.</p>
+for these values by assuming constant molal overflow (the Lewis method).
+Computationally, we can do this using the following</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">generate_initial_guess</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We can then check the arrays of liquid flow rates (<span class="math notranslate nohighlight">\(L\)</span>)
+and vapor flow rates (<span class="math notranslate nohighlight">\(V\)</span>) obtained by the calculations as below</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">L</span>
+<span class="go">array([ 400.,  400., 1400.,  600.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">V</span>
+<span class="go">array([   0., 800., 800., 800.])</span>
+</pre></div>
+</div>
+<p>or, looking at the liquid flow rates by stage more specifically,
+.. code-block:: python</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">stage</span><span class="p">,</span> <span class="n">L_j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">L</span><span class="p">):</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;L_j&#39;</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">L_j</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">L_j 0 400.0</span>
+<span class="go">L_j 1 400.0</span>
+<span class="go">L_j 2 1400.0</span>
+<span class="go">L_j 3 600.0</span>
+</pre></div>
+</div>
+<p>Here, we see that the liquid flow rates in the enriching
+section are <span class="math notranslate nohighlight">\((L/D)\\timesD=1\\times400=400=L\)</span>.
+Since the feed stage is stage 2, we notice that
+the liquid leaving this stage is equal to <span class="math notranslate nohighlight">\(\\bar{L}=L + F=400 + 1000\)</span>.
+Finally, we notice that the liquid leaving the bottom stage,
+the partial reboiler, is the same as the bottoms
+flow rate that would be calculated from an overall balance,
+<span class="math notranslate nohighlight">\(B = F - D = 1000 - 400 = 600\)</span>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">stage</span><span class="p">,</span> <span class="n">V_j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">V</span><span class="p">):</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;V_j&#39;</span><span class="p">,</span> <span class="n">stage</span><span class="p">,</span> <span class="n">V_j</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">V_j 0 0.0</span>
+<span class="go">V_j 1 800.0</span>
+<span class="go">V_j 2 800.0</span>
+<span class="go">V_j 3 800.0</span>
+</pre></div>
+</div>
+<p>We note that there is no vapor leaving stage 0 because the
+column is equipped with a total condensor.
+We note that <code class="code docutils literal notranslate"><span class="pre">V[1]</span> <span class="pre">=</span> <span class="pre">model.RR*model.D</span> <span class="pre">+</span> <span class="pre">model.D</span></code>,
+which arises from the mass balance at the top of the column.
+Similarly, we also realize that
+<code class="code docutils literal notranslate"><span class="pre">V[3]</span> <span class="pre">=</span> <span class="pre">model.L[2]</span> <span class="pre">-</span> <span class="pre">model.B</span></code>.</p>
 </dd></dl>
 
 <dl class="method">
@@ -474,10 +766,6 @@ Calculated for ideal mixture</p>
 <div class="math notranslate nohighlight">
 \[h_j = \sum_i x_{ij}h^*_i(T_j)\]</div>
 <p>where the asterisk indicates the pure component enthalpy</p>
-<div class="admonition-todo admonition" id="id3">
-<p class="admonition-title">Todo</p>
-<p>convert x mole fractions to dynamic expression</p>
-</div>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p><span class="math notranslate nohighlight">\(h_j\)</span> [J/kmol]</p>
@@ -513,9 +801,9 @@ is found in the attribute <code class="xref py py-attr docutils literal notransl
 </dd></dl>
 
 <dl class="method">
-<dt id="distillation.amundson_1958.main.Model.solve_component_mass_balances">
-<code class="sig-name descname">solve_component_mass_balances</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.solve_component_mass_balances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.solve_component_mass_balances" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate component liquid flow rates.</p>
+<dt id="distillation.amundson_1958.main.Model.solve_component_mass_bal">
+<code class="sig-name descname">solve_component_mass_bal</code><span class="sig-paren">(</span><em class="sig-param">component</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.solve_component_mass_bal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.solve_component_mass_bal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solve component mass balances</p>
 </dd></dl>
 
 <dl class="method">
@@ -525,26 +813,33 @@ is found in the attribute <code class="xref py py-attr docutils literal notransl
 </dd></dl>
 
 <dl class="method">
-<dt id="distillation.amundson_1958.main.Model.step_3_start">
-<code class="sig-name descname">step_3_start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.step_3_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.step_3_start" title="Permalink to this definition">¶</a></dt>
-<dd><p>Beginning of step 3.
-Come back here whenever not converged at step 6.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="distillation.amundson_1958.main.Model.update_K_values">
 <code class="sig-name descname">update_K_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.update_K_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.update_K_values" title="Permalink to this definition">¶</a></dt>
 <dd><p>In Step 3, we calculate <span class="math notranslate nohighlight">\(K_{i,j}\)</span>, the
 <span class="math notranslate nohighlight">\(K\)</span>-value for each component <span class="math notranslate nohighlight">\(i\)</span> on stage <span class="math notranslate nohighlight">\(j\)</span>.
-We can think of this step as doing something similar to the following:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">components</span><span class="p">:</span>
-    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">stages</span><span class="p">:</span>
-        <span class="n">K</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">K_func</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">T</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">p</span><span class="p">)</span>
+We can do this now for our model by the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">update_K_values</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We can think of this step as doing something similar to the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">K_func</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">T</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">model</span><span class="o">.</span><span class="n">P_feed</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>where the <code class="code docutils literal notranslate"><span class="pre">K_func</span></code> function returns the <span class="math notranslate nohighlight">\(K\)</span>-value for component
 <span class="math notranslate nohighlight">\(i\)</span> on stage <span class="math notranslate nohighlight">\(j\)</span>.
 The <code class="code docutils literal notranslate"><span class="pre">for</span></code> loops iteratively store the <span class="math notranslate nohighlight">\(K\)</span>-values in each component of the amtrix.</p>
+<p>In our example, we can checkout our new <span class="math notranslate nohighlight">\(K\)</span>-values as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pprint</span>  <span class="c1"># for pretty printing</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">K</span><span class="p">)</span>
+<span class="go">{&#39;n-Butane&#39;: array([1.61320297, 1.61320297, 1.61320297, 1.61320297]),</span>
+<span class="go"> &#39;n-Pentane&#39;: array([0.49828848, 0.49828848, 0.49828848, 0.49828848])}</span>
+</pre></div>
+</div>
+<p>As expected, the values for butane are higher for the light component, butane.
+The values are also the same for all stages because the temperature
+of all stages are currently fixed at the feed temperature.</p>
 <p>Behind the scenes, we then store the current stage temperatures
 in an attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">T_old</span></code> which
 we will need later in <a class="reference internal" href="#step-6"><span class="std std-ref">Step 6, T_j Convergence Check</span></a> to determine whether the temperature
@@ -562,10 +857,38 @@ by performing bubble point calculation</p>
 <p class="admonition-title">Todo</p>
 <p>vectorize with matrix multiplication</p>
 </div>
-<div class="admonition-todo admonition" id="id5">
-<p class="admonition-title">Todo</p>
-<p>convert x mole fractions to dynamic expressions</p>
-</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.x_ij_expr">
+<code class="sig-name descname">x_ij_expr</code><span class="sig-paren">(</span><em class="sig-param">i</em>, <em class="sig-param">j</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.x_ij_expr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.x_ij_expr" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> – component name</p></li>
+<li><p><strong>j</strong> – stage number</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>mole fraction on stage</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.y_ij_expr">
+<code class="sig-name descname">y_ij_expr</code><span class="sig-paren">(</span><em class="sig-param">i</em>, <em class="sig-param">j</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.y_ij_expr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.y_ij_expr" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> – component name</p></li>
+<li><p><strong>j</strong> – stage number</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>gas-phase mole fraction on stage</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>

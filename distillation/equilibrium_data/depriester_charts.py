@@ -33,10 +33,10 @@ class DePriester:
         :param p: pressure in psia
         :return: K-value for component at specific *T* and *p*
         """
-        import math
-        return math.exp(
+        import numpy as np
+        return np.exp(
             self.a_T1 / T / T + self.a_T2 / T + self.a_T6
-            + self.a_p1 * math.log(p) + self.a_p2 / p / p + self.a_p3 / p
+            + self.a_p1 * np.log(p) + self.a_p2 / p / p + self.a_p3 / p
         )
 
     def eval_SI(self, T, p):
