@@ -102,8 +102,12 @@ The complete algorithm is shown in the diagram below.
         finish [shape=ellipse,label="9. Finished"];
     }
 
+
+Tutorial
+--------
 Step 1, Input
 *************
+
 In Step 1, the property data and design variables are input.
 The property data is described in :ref:`equil-data`.
 A model with this property data and input design variables is created

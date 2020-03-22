@@ -5,7 +5,7 @@ Perform a calculation for distillation of mixtures
 of chemical compounds.
 
 .. image:: ../../distillation/column_diagram.png
-    :width: 400
+    :width: 300
     :align: center
 
 Currently only supports configurations with total condensers and partial reboilers.

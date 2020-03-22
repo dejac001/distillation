@@ -10,7 +10,7 @@ setuptools.setup(
     author_email="dejac001@umn.edu",
     description="Distillation for Chemical Engineers",
     long_description=long_description,
-    long_description_content_type="text/x-rst",
+    long_description_content_type="text/markdown",
     url="https://github.com/dejac001/distillation",
     packages=setuptools.find_packages(),
     classifiers=[
@@ -19,4 +19,5 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
+    install_reqs=["numpy==1.18.1","scipy == 1.4.1"]
 )
