@@ -1,0 +1,92 @@
+Amundson_1958
+=============
+This code follows the approach that was published by Amundson and Pontinen [Amundson1958]_.
+
+.. [Amundson1958] Amundson, NR and Pontinen, AJ. Multicomponent Distillation Calculations on a Large Digital Computer. *Ind. Eng. Chem.* 1958;50:730--736.
+
+This approach takes advantage of the following mathematical trick.
+
+.. include:: mathematical_trick.rst
+
+.. include:: algorithm.rst
+
+.. include:: tutorial.rst
+
+Putting it all together
+-----------------------
+So far, we can combine our code from the tutorial into
+the following
+
+.. code-block:: python
+
+    >>> from distillation.amundson_1958 import Model
+
+    >>> model = Model(
+            components=['n-Butane', 'n-Pentane'],
+            F=1000.,              # feed flow rate [kmol/h]
+            P=101325.*2,          # pressure (constant) [Pa]
+            z_feed=[0.45, 0.55],  # mole fraction n-Butane = 0.45
+            RR=1.,                # reflux ratio [L/D]
+            D=400.,               # distillate flow rate [kmol/h]
+            N=3,                  # number of equilibrium contacts
+            feed_stage=2,         # stage at which feed goes in
+    )
+    >>> model.generate_initial_guess()
+    >>> while not model.T_is_converged():
+    ...     model.update_K_values()
+    ...     for i in model.components:
+    ...         model.solve_component_mass_bal(i)
+    ...     model.update_T_values()
+    ...
+    >>> model.solve_energy_balances()
+
+But we need to figure out how to do the last iteration to automatically try to converge.
+It turns out, we can do this with a nested :code:`while` loop,
+as shown below
+
+.. code-block:: python
+
+    >>> while not model.flow_rates_converged():
+    ...     for i in self.components:
+    ...         model.solve_component_mass_bal(i)
+    ...     model.update_T_values()
+    ...     while not model.T_is_converged():
+    ...         model.update_K_values()
+    ...         for i in model.components:
+    ...             model.solve_component_mass_bal(i)
+    ...         model.update_T_values()
+    ...     model.solve_energy_balances()
+    ...
+
+This is what happens when the user invokes :code:`model.run()`
+For our example, it turns out that it takes about 4 loops
+through the step 4-8 loop, and then we will be converged.
+The final results for the flow rates can be calculated as
+
+.. code-block:: python
+
+    >>> model.L
+    array([ 400.        ,  353.80944637, 1340.92773179,  600.        ])
+    >>> model.V
+    array([  0.        , 733.53885641, 753.80944637, 740.92773179])
+
+which is still quite similar to what we calculated by the Lewis method.
+We can also take a look at the stage temperatures and mole fractions
+as below
+
+.. code-block:: python
+
+    >>> model.T
+    array([295.60405689, 303.58875055, 309.37291267, 315.8254746 ])
+    >>> list(model.x_ij_expr('n-Butane', i) for i in model.stages)
+    [0.7648435805973592, 0.5587863474554224, 0.38180690272177853, 0.24010427960176078]
+    >>> list(model.y_ij_expr('n-Butane', i) for i in model.stages)
+    [0.902879383384724, 0.8342045394354831, 0.6681268674620511, 0.4965317369291433]
+
+As expected, the distillate is greatly enriched in the light component (n-Butane).
+
+Class Method Reference
+----------------------
+
+.. autoclass:: distillation.amundson_1958.main.Model
+    :members:

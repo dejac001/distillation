@@ -3,7 +3,7 @@ the energy balance is
 
 .. math::
 
-    L_j h_j + V_jH_j = V_{j+1}H_{j+1} + L_{j-1}h_{j-1} + F_j h_{j,\\mathrm{feed}} + Q_j
+    L_j h_j + V_jH_j = V_{j+1}H_{j+1} + L_{j-1}h_{j-1} + F_j h_{j,\mathrm{feed}} + Q_j
 
 The liquid flow rates can be substituted in using the following relationship
 
@@ -13,5 +13,6 @@ The liquid flow rates can be substituted in using the following relationship
 
 So that the system of equations only becomes functions of :math:`V_j` and :math:`V_{j+1}`.
 
-.. todo:
+.. todo::
+
     Finish description of energy balance

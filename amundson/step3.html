@@ -1,0 +1,228 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>&lt;no title&gt; &mdash; distillation 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> distillation
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">1. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../balances.html">2. Material and Energy Balances</a></li>
+<li class="toctree-l1"><a class="reference internal" href="amundson.html">3. Amundson_1958</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bubble.html">4. Bubble Point</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equil.html">5. Equilibrium Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">6. modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html#indices-and-tables">7. Indices and tables</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">distillation</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>&lt;no title&gt;</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/amundson/step3.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <p>In Step 3, we calculate <span class="math notranslate nohighlight">\(K_{i,j}\)</span>, the
+<span class="math notranslate nohighlight">\(K\)</span>-value for each component <span class="math notranslate nohighlight">\(i\)</span> on stage <span class="math notranslate nohighlight">\(j\)</span>.
+We can do this now for our model by the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">update_K_values</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We can think of this step as doing something similar to the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">N</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">K</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">K_func</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">T</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">model</span><span class="o">.</span><span class="n">P_feed</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>where the <code class="code docutils literal notranslate"><span class="pre">K_func</span></code> function returns the <span class="math notranslate nohighlight">\(K\)</span>-value for component
+<span class="math notranslate nohighlight">\(i\)</span> on stage <span class="math notranslate nohighlight">\(j\)</span>.
+The <code class="code docutils literal notranslate"><span class="pre">for</span></code> loops iteratively store the <span class="math notranslate nohighlight">\(K\)</span>-values in each component of the amtrix.</p>
+<p>In our example, we can checkout our new <span class="math notranslate nohighlight">\(K\)</span>-values as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pprint</span>  <span class="c1"># for pretty printing</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">K</span><span class="p">)</span>
+<span class="go">{&#39;n-Butane&#39;: array([1.61320297, 1.61320297, 1.61320297, 1.61320297]),</span>
+<span class="go"> &#39;n-Pentane&#39;: array([0.49828848, 0.49828848, 0.49828848, 0.49828848])}</span>
+</pre></div>
+</div>
+<p>As expected, the values for butane are higher for the light component, butane.
+The values are also the same for all stages because the temperature
+of all stages are currently fixed at the feed temperature.</p>
+<p>Behind the scenes, we then store the current stage temperatures
+in an attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">T_old</span></code> which
+we will need later in <a class="reference internal" href="tutorial.html#step-6"><span class="std std-ref">Step 6, T_j Convergence Check</span></a> to determine whether the temperature
+has converged.</p>
+<p>The code for this step is depicted in
+<a class="reference internal" href="amundson.html#distillation.amundson_1958.main.Model.update_K_values" title="distillation.amundson_1958.main.Model.update_K_values"><code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.update_K_values()</span></code></a>.</p>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Robert F. DeJaco
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

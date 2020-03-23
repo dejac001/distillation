@@ -1,0 +1,220 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>The algorithm &mdash; distillation 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> distillation
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">1. About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../balances.html">3. Material and Energy Balances</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../amundson.html">4. Amundson_1958</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bubble.html">5. Bubble Point</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equil.html">6. Equilibrium Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">7. modules</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">distillation</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>The algorithm</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/amundson/algorithm.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="the-algorithm">
+<h1>The algorithm<a class="headerlink" href="#the-algorithm" title="Permalink to this headline">¶</a></h1>
+<p>The complete algorithm is shown in the diagram below.</p>
+<div class="graphviz"><img src="../_images/graphviz-9574addcf4025dacd1236641f616eb1085896fdb.png" alt="digraph {
+    input -&gt; initial_guess -&gt; calc_K -&gt; mass_balance -&gt; bubble_pt -&gt; converg_1;
+    converg_1 -&gt; calc_K[label=&quot;No&quot;,color=red];
+    converg_1 -&gt; energy_balance[label=&quot;Yes&quot;,color=green];
+    energy_balance -&gt; converg_2;
+    converg_2 -&gt; finish[label=&quot;Yes&quot;,color=green];
+    converg_2 -&gt; mass_balance[label=&quot;No&quot;,color=red];
+
+    input [shape=polygon,side=4,label=&quot;1. Input equilibrium and enthalpy data.\n Input design variables&quot;];
+    initial_guess [shape=polygon,side=4,label=&quot;2. Pick L, V, T\n on every stage&quot;];
+    calc_K [shape=polygon,side=4,label=&quot;3. Calculate K for each component\n on each stage&quot;];
+    mass_balance [shape=polygon,side=4,label=&quot;4. Solve component mass\n balances in matrix form&quot;,color=lightblue,style=filled];
+    bubble_pt [shape=polygon,side=4,label=&quot;5. Calculate T on each stage\n using bubble point calculation&quot;];
+    converg_1 [shape=diamond,label=&quot;6. Determine whether\n T is converged\n for all stages&quot;];
+    energy_balance [shape=polygon,side=4,label=&quot;7. Use energy balance to calculate\n L, V on every stage&quot;,color=lightblue,style=filled];
+    converg_2 [shape=diamond,label=&quot;8. Determine whether\n L, V are converged\n for all stages&quot;];
+    finish [shape=ellipse,label=&quot;9. Finished&quot;];
+}" class="graphviz" /></div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Robert F. DeJaco
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

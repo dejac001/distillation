@@ -1,0 +1,377 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tutorial &mdash; distillation 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="author" title="About these documents" href="../about.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> distillation
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">1. About</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">2. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../balances.html">3. Material and Energy Balances</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../amundson.html">4. Amundson_1958</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bubble.html">5. Bubble Point</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equil.html">6. Equilibrium Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">7. modules</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">distillation</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>Tutorial</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/amundson/tutorial.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="step-1-input">
+<h2>Step 1, Input<a class="headerlink" href="#step-1-input" title="Permalink to this headline">¶</a></h2>
+<p>In Step 1, the property data and design variables are input.
+The property data is described in <a class="reference internal" href="../equil.html#equil-data"><span class="std std-ref">Equilibrium Properties</span></a>.
+A model with this property data and input design variables is created
+by the following code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">distillation.amundson_1958</span> <span class="kn">import</span> <span class="n">Model</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">components</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;n-Butane&#39;</span><span class="p">,</span> <span class="s1">&#39;n-Pentane&#39;</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="n">F</span><span class="o">=</span><span class="mf">1000.</span><span class="p">,</span>              <span class="c1"># feed flow rate [kmol/h]</span>
+<span class="gp">... </span>    <span class="n">P</span><span class="o">=</span><span class="mf">101325.</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span>          <span class="c1"># pressure (constant) [Pa]</span>
+<span class="gp">... </span>    <span class="n">z_feed</span><span class="o">=</span><span class="p">[</span><span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.55</span><span class="p">],</span>  <span class="c1"># mole fraction n-Butane = 0.45</span>
+<span class="gp">... </span>    <span class="n">RR</span><span class="o">=</span><span class="mf">1.</span><span class="p">,</span>                <span class="c1"># reflux ratio [L/D]</span>
+<span class="gp">... </span>    <span class="n">D</span><span class="o">=</span><span class="mf">400.</span><span class="p">,</span>               <span class="c1"># distillate flow rate [kmol/h]</span>
+<span class="gp">... </span>    <span class="n">N</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>                  <span class="c1"># number of equilibrium contacts</span>
+<span class="gp">... </span>    <span class="n">feed_stage</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>         <span class="c1"># stage at which feed goes in</span>
+<span class="go">)</span>
+</pre></div>
+</div>
+<p>Currently, the input design flow rates must be
+specified in kmol/h and the pressure must be specified in Pa.
+The method called in this process is
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.__init__()</span></code>
+(see <a class="reference internal" href="../amundson.html#amund-code"><span class="std std-ref">Class Method Reference</span></a>).</p>
+</div>
+<div class="section" id="step-2-make-initial-guess">
+<h2>Step 2, Make Initial Guess<a class="headerlink" href="#step-2-make-initial-guess" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="step-3-update-k-values">
+<h2>Step 3, Update <span class="math notranslate nohighlight">\(K\)</span>-values<a class="headerlink" href="#step-3-update-k-values" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="step-4-solve-component-mass-balances">
+<h2>Step 4, Solve Component Mass Balances<a class="headerlink" href="#step-4-solve-component-mass-balances" title="Permalink to this headline">¶</a></h2>
+<p>The two stages in which tridiagonal matrices are used
+for computational efficiency are <a class="reference internal" href="../amundson.html#stage-4"><span class="std std-ref">Step 4, Solve Component Mass Balances</span></a> and <a class="reference internal" href="../amundson.html#step-7"><span class="std std-ref">Step 7, Solve Energy Balances</span></a>,
+which are depicted in colored blue boxes.</p>
+<p>In this step, the matrices are tridiagonal for the complete
+mass balances for <em>each</em> component (as opposed to all components together).
+The variables that are calculated are <span class="math notranslate nohighlight">\(l_{ij}\)</span> for each component <span class="math notranslate nohighlight">\(i\)</span>
+and each stage <span class="math notranslate nohighlight">\(j\)</span>.
+This new variable is introduced where <span class="math notranslate nohighlight">\(l_{ij}=x_iL_j\)</span>,
+and can be interpreted as a <em>component</em> flow rate.
+By formulating the mass balance equations into function of <span class="math notranslate nohighlight">\(l_{ij}\)</span>
+the system of equations can be converted in to a tridiagonal matrix.
+Computationally, we can perform this step
+using our model by the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+<span class="gp">... </span>   <span class="n">model</span><span class="o">.</span><span class="n">solve_component_mass_bal</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>First, the tridiagonal matrix is generated.
+Then, the efficient approach described in <a class="reference internal" href="../amundson.html#tri-matrix"><span class="std std-ref">Mathematical Trick</span></a> is used.
+to solve the equations.</p>
+<p>We can see the results of the calculation by probing
+the model attributes as follows</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pprint</span> <span class="c1"># pretty printing</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">l</span><span class="p">)</span>
+<span class="go">{&#39;n-Butane&#39;: array([288.88918652, 179.07801532, 507.65007098, 161.11081348]),</span>
+<span class="go"> &#39;n-Pentane&#39;: array([ 74.88288594, 150.28018773, 790.77762525, 475.11711406])}</span>
+</pre></div>
+</div>
+<p>Since <span class="math notranslate nohighlight">\(\sum_i l_{i,j} = L_j\)</span>, it is worthwhile to compare
+our calculations to what was calculated for <span class="math notranslate nohighlight">\(L_j\)</span> with the
+Lewis method (i.e. assuming Constant Molal Overflow)</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">stage</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">stages</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">stage</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">L</span><span class="p">[</span><span class="n">stage</span><span class="p">],</span> <span class="n">model</span><span class="o">.</span><span class="n">l</span><span class="p">[</span><span class="s1">&#39;n-Butane&#39;</span><span class="p">][</span><span class="n">stage</span><span class="p">]</span><span class="o">+</span><span class="n">model</span><span class="o">.</span><span class="n">l</span><span class="p">[</span><span class="s1">&#39;n-Pentane&#39;</span><span class="p">][</span><span class="n">stage</span><span class="p">])</span>
+<span class="gp">...</span>
+<span class="go">0 400.0 363.7720724598715</span>
+<span class="go">1 400.0 329.3582030449366</span>
+<span class="go">2 1400.0 1298.4276962288486</span>
+<span class="go">3 600.0 636.2279275401286</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>From this analysis, we realize that our initial guess for the liquid and vapor flow rates was not that bad.</p>
+</div>
+<div class="section" id="step-5">
+<h2>Step 5<a class="headerlink" href="#step-5" title="Permalink to this headline">¶</a></h2>
+<p>In <a class="reference internal" href="../amundson.html#step2"><span class="std std-ref">Step 2, Make Initial Guess</span></a>, we performed a <a class="reference internal" href="../bubble.html#bubble"><span class="std std-ref">Bubble Point</span></a> calculation
+to determine the temperature of the feed.
+We do the same thing here, except we do it multiple times
+(i.e., for each stage).
+However, we have not calculated the liquid phase mole fractions
+explicitly yet.
+We can use the liquid component mass balances calculated in <a class="reference internal" href="../amundson.html#stage-4"><span class="std std-ref">Step 4, Solve Component Mass Balances</span></a>
+to calculate the mole fractions as</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}x_{ij} = \\frac{l_{ij}}{\sum_k l_{kj}}\end{split}\]</div>
+<p>and then perform the <a class="reference internal" href="../bubble.html#bubble"><span class="std std-ref">Bubble Point</span></a> calculations
+with these mole fractions.</p>
+<p>Computationally, we can perform this step with our
+model using the following</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">T</span>
+<span class="go">array([306.37018411, 306.37018411, 306.37018411, 306.37018411])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">update_T_values</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">T</span>
+<span class="go">array([295.34137166 302.94861315 308.72858323 314.97039634])</span>
+</pre></div>
+</div>
+<p>And we can see how the temperatures change from the initial guess (the feed temperature)
+to the results of the first calculation.</p>
+</div>
+<div class="section" id="step-6-t-j-convergence-check">
+<h2>Step 6, <span class="math notranslate nohighlight">\(T_j\)</span> Convergence Check<a class="headerlink" href="#step-6-t-j-convergence-check" title="Permalink to this headline">¶</a></h2>
+<p>We can see from <a class="reference internal" href="../amundson.html#step-5"><span class="std std-ref">Step 5</span></a> that the temperature
+has clearly changed by more than 0.01~K between
+the first iteration. When we perform this step,
+we find that the temperature has not converged.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">T_is_converged</span><span class="p">()</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+<p>Following the algorithmic diagram,
+we go back to Step 3 and perform a few more iterations.</p>
+<p>Its convenient to perform these iterations with a while loop, as follows
+.. code-block:: python</p>
+<blockquote>
+<div><p>while not model.T_is_converged():
+…     model.update_K_values()
+…     for i in model.components:
+…         model.solve_component_mass_bal(i)
+…     model.update_T_values()
+…     print(model.T)
+…
+[295.50131711 303.41982848 309.35773209 315.96224522]
+[295.6166139  303.62102821 309.52271272 316.15309479]
+[295.65094925 303.67756389 309.56508571 316.19923696]
+[295.66006297 303.69238402 309.57598554 316.21097278]
+[295.66242518 303.69621481 309.57879188 316.21398756]</p>
+</div></blockquote>
+<p>The temperature is converged after 5 more iterations,
+as we can see from the output above.
+Since the temperature has converged,
+we can now proceed to the next step.</p>
+</div>
+<div class="section" id="step-7-solve-energy-balances">
+<h2>Step 7, Solve Energy Balances<a class="headerlink" href="#step-7-solve-energy-balances" title="Permalink to this headline">¶</a></h2>
+<p>In Step 7, we solve the energy balances.
+Here, all the balances can again be combined into one banded matrix.</p>
+<p>A helper function for creation and solution of these
+matrices is provided in the model.
+In other words, the energy balances can be solved
+by the following code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">L</span>
+<span class="go">array([ 400.,  400., 1400.,  600.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">V</span>
+<span class="go">array([  0., 800., 800., 800.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">solve_energy_balances</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">L</span>
+<span class="go">array([ 400.        ,  312.3605968 , 1300.10206406,  600.        ])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model</span><span class="o">.</span><span class="n">V</span>
+<span class="go">array([  0.        , 730.64500782, 712.3605968 , 700.10206406])</span>
+<span class="go">&gt;&gt;&gt;</span>
+</pre></div>
+</div>
+<p>Where we have added extra steps so that we can check the
+values of <code class="code docutils literal notranslate"><span class="pre">model.L</span></code> and <code class="code docutils literal notranslate"><span class="pre">model.V</span></code> before
+and after solving the energy balances.</p>
+</div>
+<div class="section" id="step-8-v-j-l-j-convergence-check">
+<h2>Step 8, <span class="math notranslate nohighlight">\(V_j\)</span>, <span class="math notranslate nohighlight">\(L_j\)</span> Convergence Check<a class="headerlink" href="#step-8-v-j-l-j-convergence-check" title="Permalink to this headline">¶</a></h2>
+<p>In this step, we determine if the simulation has converged.
+If the following holds true for all stages <span class="math notranslate nohighlight">\(j\)</span></p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\\sqrt{\\left(\\frac{X_{j,\\mathrm{new}} - X_{j,\\mathrm{old}}}{X_{j,\\mathrm{new}}}\\right)^2} &lt; \\epsilon\end{split}\]</div>
+<p>for each variable <span class="math notranslate nohighlight">\(X=V\)</span> and <span class="math notranslate nohighlight">\(X=L\)</span>.
+The flow rate tolerance, <span class="math notranslate nohighlight">\(\epsilon\)</span>,
+is found in the attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.flow_rate_tol</span></code>.
+The code for this step is found in <a class="reference internal" href="../amundson.html#distillation.amundson_1958.main.Model.flow_rates_converged" title="distillation.amundson_1958.main.Model.flow_rates_converged"><code class="xref py py-meth docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.flow_rates_converged()</span></code></a></p>
+<p>Obviously, our flow rates have not converged after just one iteration,
+as we have seen that several values have changed by <span class="math notranslate nohighlight">\(\\approx 100\)</span> kmol/h.
+We will need to come up with a looping algorithm to
+get the simulation to converge, as described in the next section.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Robert F. DeJaco
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

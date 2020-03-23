@@ -17,27 +17,26 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
-    <script type="text/javascript" src="_static/js/theme.js"></script>
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
     
 
   
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
-    <link rel="author" title="About these documents" href="about.html" />
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -51,7 +50,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> distillation
+            <a href="../index.html" class="icon icon-home"> distillation
           
 
           
@@ -64,7 +63,7 @@
 
           
 <div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
@@ -83,13 +82,13 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="about.html">1. About</a></li>
-<li class="toctree-l1"><a class="reference internal" href="install.html">2. Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="balances.html">3. Material and Energy Balances</a></li>
-<li class="toctree-l1"><a class="reference internal" href="amundson.html">4. Amundson_1958</a></li>
-<li class="toctree-l1"><a class="reference internal" href="bubble.html">5. Bubble Point</a></li>
-<li class="toctree-l1"><a class="reference internal" href="equil.html">6. Equilibrium Properties</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">7. modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../install.html">1. Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../balances.html">2. Material and Energy Balances</a></li>
+<li class="toctree-l1"><a class="reference internal" href="amundson.html">3. Amundson_1958</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bubble.html">4. Bubble Point</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../equil.html">5. Equilibrium Properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">6. modules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html#indices-and-tables">7. Indices and tables</a></li>
 </ul>
 
             
@@ -104,7 +103,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">distillation</a>
+          <a href="../index.html">distillation</a>
         
       </nav>
 
@@ -133,7 +132,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="../index.html">Docs</a> &raquo;</li>
         
       <li>&lt;no title&gt;</li>
     
@@ -141,7 +140,7 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/temp-converge.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/amundson/temp-converge.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -158,7 +157,7 @@
 <span class="math notranslate nohighlight">\(T_j\)</span>, have converged.
 Mathematically, we require the following</p>
 <div class="math notranslate nohighlight">
-\[\sqrt{\left(T_{j,\mathrm{new}} - T_{j,\mathrm{old}}\right)^2} &lt; \epsilon\]</div>
+\[\begin{split}\\sqrt{\\left(T_{j,\\mathrm{new}} - T_{j,\\mathrm{old}}\\right)^2} &lt; \\epsilon\end{split}\]</div>
 <p>The temperature tolerance <span class="math notranslate nohighlight">\(\epsilon\)</span>
 is attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.temperature_tol</span></code>;
 It is currently set to 0.01.</p>

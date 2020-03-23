@@ -1,0 +1,26 @@
+The algorithm
+-------------
+
+The complete algorithm is shown in the diagram below.
+
+.. graphviz::
+
+    digraph {
+        input -> initial_guess -> calc_K -> mass_balance -> bubble_pt -> converg_1;
+        converg_1 -> calc_K[label="No",color=red];
+        converg_1 -> energy_balance[label="Yes",color=green];
+        energy_balance -> converg_2;
+        converg_2 -> finish[label="Yes",color=green];
+        converg_2 -> mass_balance[label="No",color=red];
+
+        input [shape=polygon,side=4,label="1. Input equilibrium and enthalpy data.\n Input design variables"];
+        initial_guess [shape=polygon,side=4,label="2. Pick L, V, T\n on every stage"];
+        calc_K [shape=polygon,side=4,label="3. Calculate K for each component\n on each stage"];
+        mass_balance [shape=polygon,side=4,label="4. Solve component mass\n balances in matrix form",color=lightblue,style=filled];
+        bubble_pt [shape=polygon,side=4,label="5. Calculate T on each stage\n using bubble point calculation"];
+        converg_1 [shape=diamond,label="6. Determine whether\n T is converged\n for all stages"];
+        energy_balance [shape=polygon,side=4,label="7. Use energy balance to calculate\n L, V on every stage",color=lightblue,style=filled];
+        converg_2 [shape=diamond,label="8. Determine whether\n L, V are converged\n for all stages"];
+        finish [shape=ellipse,label="9. Finished"];
+    }
+
