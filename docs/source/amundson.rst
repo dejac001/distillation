@@ -222,7 +222,7 @@ to calculate the mole fractions as
 
 .. math::
 
-    x_{ij} = \\frac{l_{ij}}{\sum_k l_{kj}}
+    x_{ij} = \frac{l_{ij}}{\sum_k l_{kj}}
 
 and then perform the :ref:`bubble` calculations
 with these mole fractions.
@@ -262,6 +262,7 @@ Following the algorithmic diagram,
 we go back to Step 3 and perform a few more iterations.
 
 Its convenient to perform these iterations with a while loop, as follows
+
 .. code-block:: python
 
     while not model.T_is_converged():
@@ -320,7 +321,7 @@ If the following holds true for all stages :math:`j`
 
 .. math::
 
-    \\sqrt{\\left(\\frac{X_{j,\\mathrm{new}} - X_{j,\\mathrm{old}}}{X_{j,\\mathrm{new}}}\\right)^2} < \\epsilon
+    \sqrt{\left(\frac{X_{j,\mathrm{new}} - X_{j,\mathrm{old}}}{X_{j,\mathrm{new}}}\right)^2} < \epsilon
 
 for each variable :math:`X=V` and :math:`X=L`.
 The flow rate tolerance, :math:`\epsilon`,

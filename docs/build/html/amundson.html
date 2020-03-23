@@ -327,9 +327,9 @@ and vapor flow rates (<span class="math notranslate nohighlight">\(V\)</span>) o
 </pre></div>
 </div>
 <p>Here, we see that the liquid flow rates in the enriching
-section are <span class="math notranslate nohighlight">\((L/D)\\timesD=1\\times400=400=L\)</span>.
+section are <span class="math notranslate nohighlight">\((L/D)\times D=1\times 400=400=L\)</span>.
 Since the feed stage is stage 2, we notice that
-the liquid leaving this stage is equal to <span class="math notranslate nohighlight">\(\\bar{L}=L + F=400 + 1000\)</span>.
+the liquid leaving this stage is equal to <span class="math notranslate nohighlight">\(\overline{L}=L + F=400 + 1000\)</span>.
 Finally, we notice that the liquid leaving the bottom stage,
 the partial reboiler, is the same as the bottoms
 flow rate that would be calculated from an overall balance,
@@ -442,7 +442,7 @@ explicitly yet.
 We can use the liquid component mass balances calculated in <a class="reference internal" href="#stage-4"><span class="std std-ref">Step 4, Solve Component Mass Balances</span></a>
 to calculate the mole fractions as</p>
 <div class="math notranslate nohighlight">
-\[\begin{split}x_{ij} = \\frac{l_{ij}}{\sum_k l_{kj}}\end{split}\]</div>
+\[x_{ij} = \frac{l_{ij}}{\sum_k l_{kj}}\]</div>
 <p>and then perform the <a class="reference internal" href="bubble.html#bubble"><span class="std std-ref">Bubble Point</span></a> calculations
 with these mole fractions.</p>
 <p>Computationally, we can perform this step with our
@@ -463,7 +463,7 @@ to the results of the first calculation.</p>
 <span class="math notranslate nohighlight">\(T_j\)</span>, have converged.
 Mathematically, we require the following</p>
 <div class="math notranslate nohighlight">
-\[\begin{split}\\sqrt{\\left(T_{j,\\mathrm{new}} - T_{j,\\mathrm{old}}\\right)^2} &lt; \\epsilon\end{split}\]</div>
+\[\sqrt{\left(T_{j,\mathrm{new}} - T_{j,\mathrm{old}}\right)^2} &lt; \epsilon\]</div>
 <p>The temperature tolerance <span class="math notranslate nohighlight">\(\epsilon\)</span>
 is attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.temperature_tol</span></code>;
 It is currently set to 0.01.</p>
@@ -477,22 +477,21 @@ we find that the temperature has not converged.</p>
 </div>
 <p>Following the algorithmic diagram,
 we go back to Step 3 and perform a few more iterations.</p>
-<p>Its convenient to perform these iterations with a while loop, as follows
-.. code-block:: python</p>
-<blockquote>
-<div><p>while not model.T_is_converged():
-…     model.update_K_values()
-…     for i in model.components:
-…         model.solve_component_mass_bal(i)
-…     model.update_T_values()
-…     print(model.T)
-…
-[295.50131711 303.41982848 309.35773209 315.96224522]
-[295.6166139  303.62102821 309.52271272 316.15309479]
-[295.65094925 303.67756389 309.56508571 316.19923696]
-[295.66006297 303.69238402 309.57598554 316.21097278]
-[295.66242518 303.69621481 309.57879188 316.21398756]</p>
-</div></blockquote>
+<p>Its convenient to perform these iterations with a while loop, as follows</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">while</span> <span class="ow">not</span> <span class="n">model</span><span class="o">.</span><span class="n">T_is_converged</span><span class="p">():</span>
+<span class="o">...</span>     <span class="n">model</span><span class="o">.</span><span class="n">update_K_values</span><span class="p">()</span>
+<span class="o">...</span>     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
+<span class="o">...</span>         <span class="n">model</span><span class="o">.</span><span class="n">solve_component_mass_bal</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="o">...</span>     <span class="n">model</span><span class="o">.</span><span class="n">update_T_values</span><span class="p">()</span>
+<span class="o">...</span>     <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="p">[</span><span class="mf">295.50131711</span> <span class="mf">303.41982848</span> <span class="mf">309.35773209</span> <span class="mf">315.96224522</span><span class="p">]</span>
+<span class="p">[</span><span class="mf">295.6166139</span>  <span class="mf">303.62102821</span> <span class="mf">309.52271272</span> <span class="mf">316.15309479</span><span class="p">]</span>
+<span class="p">[</span><span class="mf">295.65094925</span> <span class="mf">303.67756389</span> <span class="mf">309.56508571</span> <span class="mf">316.19923696</span><span class="p">]</span>
+<span class="p">[</span><span class="mf">295.66006297</span> <span class="mf">303.69238402</span> <span class="mf">309.57598554</span> <span class="mf">316.21097278</span><span class="p">]</span>
+<span class="p">[</span><span class="mf">295.66242518</span> <span class="mf">303.69621481</span> <span class="mf">309.57879188</span> <span class="mf">316.21398756</span><span class="p">]</span>
+</pre></div>
+</div>
 <p>The temperature is converged after 5 more iterations,
 as we can see from the output above.
 Since the temperature has converged,
@@ -505,11 +504,15 @@ Here, all the balances can again be combined into one banded matrix.</p>
 <p>For a general stage <span class="math notranslate nohighlight">\(j\)</span>,
 the energy balance is</p>
 <div class="math notranslate nohighlight">
-\[\begin{split}L_j h_j + V_jH_j = V_{j+1}H_{j+1} + L_{j-1}h_{j-1} + F_j h_{j,\\mathrm{feed}} + Q_j\end{split}\]</div>
+\[L_j h_j + V_jH_j = V_{j+1}H_{j+1} + L_{j-1}h_{j-1} + F_j h_{j,\mathrm{feed}} + Q_j\]</div>
 <p>The liquid flow rates can be substituted in using the following relationship</p>
 <div class="math notranslate nohighlight">
 \[L_k = V_{k+1} - D + \sum_{m=0}^k F_m\]</div>
 <p>So that the system of equations only becomes functions of <span class="math notranslate nohighlight">\(V_j\)</span> and <span class="math notranslate nohighlight">\(V_{j+1}\)</span>.</p>
+<div class="admonition-todo admonition" id="id3">
+<p class="admonition-title">Todo</p>
+<p>Finish description of energy balance</p>
+</div>
 <p>A helper function for creation and solution of these
 matrices is provided in the model.
 In other words, the energy balances can be solved
@@ -535,7 +538,7 @@ and after solving the energy balances.</p>
 <p>In this step, we determine if the simulation has converged.
 If the following holds true for all stages <span class="math notranslate nohighlight">\(j\)</span></p>
 <div class="math notranslate nohighlight">
-\[\begin{split}\\sqrt{\\left(\\frac{X_{j,\\mathrm{new}} - X_{j,\\mathrm{old}}}{X_{j,\\mathrm{new}}}\\right)^2} &lt; \\epsilon\end{split}\]</div>
+\[\sqrt{\left(\frac{X_{j,\mathrm{new}} - X_{j,\mathrm{old}}}{X_{j,\mathrm{new}}}\right)^2} &lt; \epsilon\]</div>
 <p>for each variable <span class="math notranslate nohighlight">\(X=V\)</span> and <span class="math notranslate nohighlight">\(X=L\)</span>.
 The flow rate tolerance, <span class="math notranslate nohighlight">\(\epsilon\)</span>,
 is found in the attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.flow_rate_tol</span></code>.
@@ -624,7 +627,7 @@ Calculated for ideal mixture</p>
 <div class="math notranslate nohighlight">
 \[H_j = \sum_i y_{ij}H^*_i(T_j)\]</div>
 <p>where the asterisk indicates the pure component enthalpy</p>
-<div class="admonition-todo admonition" id="id3">
+<div class="admonition-todo admonition" id="id4">
 <p class="admonition-title">Todo</p>
 <p>convert y mole fractions to dynamic expression</p>
 </div>
@@ -654,7 +657,7 @@ Calculated for ideal mixture</p>
 <span class="math notranslate nohighlight">\(T_j\)</span>, have converged.
 Mathematically, we require the following</p>
 <div class="math notranslate nohighlight">
-\[\begin{split}\\sqrt{\\left(T_{j,\\mathrm{new}} - T_{j,\\mathrm{old}}\\right)^2} &lt; \\epsilon\end{split}\]</div>
+\[\sqrt{\left(T_{j,\mathrm{new}} - T_{j,\mathrm{old}}\right)^2} &lt; \epsilon\]</div>
 <p>The temperature tolerance <span class="math notranslate nohighlight">\(\epsilon\)</span>
 is attribute <code class="xref py py-attr docutils literal notranslate"><span class="pre">distillation.amundson_1958.main.Model.temperature_tol</span></code>;
 It is currently set to 0.01.</p>
@@ -719,9 +722,9 @@ and vapor flow rates (<span class="math notranslate nohighlight">\(V\)</span>) o
 </pre></div>
 </div>
 <p>Here, we see that the liquid flow rates in the enriching
-section are <span class="math notranslate nohighlight">\((L/D)\\timesD=1\\times400=400=L\)</span>.
+section are <span class="math notranslate nohighlight">\((L/D)\times D=1\times 400=400=L\)</span>.
 Since the feed stage is stage 2, we notice that
-the liquid leaving this stage is equal to <span class="math notranslate nohighlight">\(\\bar{L}=L + F=400 + 1000\)</span>.
+the liquid leaving this stage is equal to <span class="math notranslate nohighlight">\(\overline{L}=L + F=400 + 1000\)</span>.
 Finally, we notice that the liquid leaving the bottom stage,
 the partial reboiler, is the same as the bottoms
 flow rate that would be calculated from an overall balance,
@@ -853,7 +856,7 @@ has converged.</p>
 <code class="sig-name descname">update_T_values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.update_T_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.update_T_values" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update temperatures in all stages
 by performing bubble point calculation</p>
-<div class="admonition-todo admonition" id="id4">
+<div class="admonition-todo admonition" id="id5">
 <p class="admonition-title">Todo</p>
 <p>vectorize with matrix multiplication</p>
 </div>

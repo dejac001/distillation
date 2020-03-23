@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="distillation",
-    version="0.0.4",
+    version="0.1.0",
     author="Robert F. De Jaco",
     author_email="dejac001@umn.edu",
     description="Distillation for Chemical Engineers",

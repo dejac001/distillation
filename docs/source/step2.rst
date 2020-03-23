@@ -49,9 +49,9 @@ or, looking at the liquid flow rates by stage more specifically,
     L_j 3 600.0
 
 Here, we see that the liquid flow rates in the enriching
-section are :math:`(L/D)\\timesD=1\\times400=400=L`.
+section are :math:`(L/D)\times D=1\times 400=400=L`.
 Since the feed stage is stage 2, we notice that
-the liquid leaving this stage is equal to :math:`\\bar{L}=L + F=400 + 1000`.
+the liquid leaving this stage is equal to :math:`\overline{L}=L + F=400 + 1000`.
 Finally, we notice that the liquid leaving the bottom stage,
 the partial reboiler, is the same as the bottoms
 flow rate that would be calculated from an overall balance,
