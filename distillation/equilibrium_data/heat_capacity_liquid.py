@@ -1,6 +1,6 @@
 class CpL:
     """Heat capacities of liquids"""
-    def __init__(self, compound_name):
+    def __init__(self, compound_name, verbose=False):
         from distillation import os, ROOT_DIR
         file = os.path.join(ROOT_DIR, 'equilibrium_data', 'heat_capacity_liquid.csv')
         self.num_constants = 5
@@ -16,6 +16,12 @@ class CpL:
                     self.value_T_min = float(vals[header.index('Val(Tmin)')])
                     self.T_min = float(vals[header.index('Tmin [K]')])
                     self.T_max = float(vals[header.index('Tmax [K]')])
+
+        if verbose:
+            print('Setting heat capacity constants for %s (taken from Perrys):' % compound_name)
+            for key, val in self.constants.items():
+                print('            %s:' % key, val)
+            print('             value at 300K [J/kmol/K]=', self.eval(300.))
 
     def eval(self, T):
         """return heat capacity liquid in J/kmol/K"""

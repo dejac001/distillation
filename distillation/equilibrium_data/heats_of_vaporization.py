@@ -1,6 +1,6 @@
 class dH_vap:
     """Heat of vaporization"""
-    def __init__(self, compound_name):
+    def __init__(self, compound_name, verbose=False):
         from distillation import os, ROOT_DIR
         file = os.path.join(ROOT_DIR, 'equilibrium_data', 'heats_of_vaporization.csv')
         self.units = 'J/kmol'
@@ -11,6 +11,9 @@ class dH_vap:
                 if vals[0] == compound_name:
                     self.value = float(vals[header.index('Value')]) * 1e6   # convert from kJ/mol to J/kmol
                     self.T_ref = float(vals[header.index('T_ref')])
+
+        if verbose:
+            print('Assuming heat of vaporization of %s is constant at %e kJ/mol' % (compound_name, self.value/1e6))
 
     def eval(self):
         return self.value

@@ -26,10 +26,6 @@ class Model:
         """
         self.flow_rate_tol = 1.e-4
         self.temperature_tol = 1.e-2
-        from distillation.equilibrium_data.depriester_charts import DePriester
-        from distillation.equilibrium_data.heat_capacity_liquid import CpL
-        from distillation.equilibrium_data.heat_capacity_vapor import CpV
-        from distillation.equilibrium_data.heats_of_vaporization import dH_vap
         self.components = components
         self.F_feed = F
         self.P_feed = P
@@ -40,21 +36,11 @@ class Model:
         self.N = N
         self.feed_stage = feed_stage
         self.T_feed_guess = T_feed_guess
-        self.K_func = {
-            key: DePriester(key) for key in self.components
-        }
-        self.CpL_func = {
-            key: CpL(key) for key in self.components
-        }
-        self.CpV_func = {
-            key: CpV() for key in self.components
-        }
-        self.dH_func = {
-            key: dH_vap(key) for key in self.components
-        }
-        self.T_ref = {
-            key: val.T_ref for key, val in self.dH_func.items()
-        }
+        self.K_func = {}
+        self.CpL_func = {}
+        self.CpV_func = {}
+        self.dH_func = {}
+        self.T_ref = {}
 
         # create matrices for variables
         self.num_stages = self.N + 1
@@ -81,6 +67,37 @@ class Model:
 
         # solver parameters
         self.df = 1.  # Dampening factor to prevent excessive oscillation of temperatures
+
+    def add_parameters(self, verbose=False):
+        """Add thermodynamic parameters for calculation
+
+        .. note::
+
+            K values from DePriester charts
+            CpL from Perrys
+            CpV assumes ideal gas
+            dH_vap from NIST Webbook
+
+        """
+        from distillation.equilibrium_data.depriester_charts import DePriester
+        from distillation.equilibrium_data.heat_capacity_liquid import CpL
+        from distillation.equilibrium_data.heat_capacity_vapor import CpV
+        from distillation.equilibrium_data.heats_of_vaporization import dH_vap
+        self.K_func = {
+            key: DePriester(key, verbose) for key in self.components
+        }
+        self.CpL_func = {
+            key: CpL(key, verbose) for key in self.components
+        }
+        self.CpV_func = {
+            key: CpV(key, verbose) for key in self.components
+        }
+        self.dH_func = {
+            key: dH_vap(key, verbose) for key in self.components
+        }
+        self.T_ref = {
+            key: val.T_ref for key, val in self.dH_func.items()
+        }
 
     def h_pure_rule(self, c, T):
         """rule for liquid enthalpy of pure component"""
