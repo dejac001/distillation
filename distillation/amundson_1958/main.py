@@ -63,14 +63,11 @@ class Model:
         self.V = np.zeros(self.num_stages)
         self.L_old = np.zeros(self.num_stages)
         self.V_old = np.zeros(self.num_stages)
-        self.L[N] = self.B
-        self.V[0] = 0.  # total condenser
         self.F = np.zeros(self.num_stages)
         self.F[self.feed_stage] = self.F_feed
         self.z = {
             key: np.zeros(self.num_stages) for key in components
         }
-        # todo: implement component flow rates throughout
         self.l = {
             key: np.zeros(self.num_stages) for key in components
         }
@@ -78,12 +75,9 @@ class Model:
             self.z[component][feed_stage] = self.z_feed[component]
 
         self.T_feed = self.T_feed_guess
-        self.T = self.T_feed_guess * np.ones(self.num_stages)
+        self.T = np.zeros(self.num_stages)
         self.T_old = np.zeros(self.num_stages)
-        self.K = {
-            key: self.K_func[key].eval_SI(self.T_feed, self.P_feed) * np.ones(self.num_stages) for key in
-            self.components
-        }
+        self.K = {key: np.zeros(self.num_stages) for key in self.components}
 
         # solver parameters
         self.df = 1.  # Dampening factor to prevent excessive oscillation of temperatures
@@ -224,21 +218,26 @@ class Model:
                     bubble_point(x_vals, K_vals, self.P_feed, self.T_old[i]) - self.T_old[i]
             )
 
-    def generate_initial_guess(self):
+    def calculate_T_feed(self):
         """
-        .. include:: step2.rst
+        .. include: calculate_feed_temperature.rst
 
         """
-        # initialize temperatures as T (feed)
         self.T_feed = bubble_point(
             [self.z_feed[i] for i in self.components],
             [self.K_func[i].eval_SI for i in self.components], self.P_feed, self.T_feed_guess
         )
         self.T[:] = self.T_feed
 
+    def initialize_flow_rates(self):
+        """
+        .. include:: step2.rst
+
+        """
         # initialize L, V with CMO
         self.L[:self.feed_stage] = self.RR * self.D
         self.L[self.feed_stage:self.N] = self.RR * self.D + self.F_feed
+        self.L[self.N] = self.B
         self.V[1:] = self.RR * self.D + self.D
 
     def T_is_converged(self):

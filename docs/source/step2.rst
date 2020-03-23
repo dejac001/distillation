@@ -4,20 +4,7 @@ vapor flow rates, and temperatures on each stage :math:`j`.
 That is, we need to generate initial guesses for
 :math:`L_j`, :math:`V_j`, and :math:`T_j`.
 
-First we calculate the feed temperature
-(which is a saturated liquid) using
-a bubble point calculation (see :ref:`bubble`).
-We set the temperatures :math:`T_j`
-to be the same as the feed temperature.
-This step is performed automatically when the model
-is initialized with input parameters.
-We can check to see the feed temperature calculated
-for our model by the following
-
-.. code-block:: python
-
-    >>> model.T_feed
-    306.37018410667076
+.. include:: calculate_feed_temperature.rst
 
 Then, we generate the initial guesses
 for these values by assuming constant molal overflow (the Lewis method).
