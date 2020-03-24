@@ -228,23 +228,32 @@ class Model:
         # update from old calculations
         for i in range(self.num_stages):
             # calculate stage temperature now that all liquid-phase mole fractions are known
-            K_vals = [self.K_func[c].eval_SI for c in self.components]
-            l_total = sum(self.l[c][i] for c in self.components)
-            x_vals = [self.l[c][i] / l_total for c in self.components]
             self.T[i] = self.T_old[i] + self.df * (
-                    bubble_point(x_vals, K_vals, self.P_feed, self.T_old[i]) - self.T_old[i]
+                    self.bubble_T(i) - self.T_old[i]
             )
 
+    def bubble_T(self, stage):
+        l_total = sum(self.l[c][stage] for c in self.components)
+        K_vals = [self.K_func[c].eval_SI for c in self.components]
+        x_vals = [self.l[c][stage]/l_total for c in self.components]
+        return bubble_point(x_vals, K_vals, self.P_feed, self.T_old[stage])
+
     def calculate_T_feed(self):
+        self.T_feed = self.bubble_T_feed()
+        self.initialize_stage_temperatures()
+
+    def initialize_stage_temperatures(self):
+        self.T[:] = self.T_feed
+
+    def bubble_T_feed(self):
         """
         .. include: calculate_feed_temperature.rst
 
         """
-        self.T_feed = bubble_point(
+        return bubble_point(
             [self.z_feed[i] for i in self.components],
             [self.K_func[i].eval_SI for i in self.components], self.P_feed, self.T_feed_guess
         )
-        self.T[:] = self.T_feed
 
     def initialize_flow_rates(self):
         """
