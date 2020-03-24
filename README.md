@@ -5,7 +5,7 @@ of chemical compounds.
 
 <p align="center"> 
     <img 
-        src="distillation/column_diagram.png" 
+        src="docs/source/column_diagram.png" 
         width="300"
     />
 </p>
@@ -14,6 +14,9 @@ Currently only supports configurations with total condensers and partial reboile
 Equilibrium data currently only comes from DePriester charts
 and is assumed to only depend on pressure and temperature.
 
+Tutorial
+========
+A tutorial can be found [here](tutorial.ipynb)
 
 Documentation
 =============
