@@ -14,6 +14,7 @@ Currently only supports configurations with total condensers and partial reboile
 Equilibrium data currently only comes from DePriester charts
 and is assumed to only depend on pressure and temperature.
 
+
 Tutorial
 ========
 A tutorial can be found [here](tutorial.ipynb)

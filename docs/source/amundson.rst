@@ -164,6 +164,9 @@ This new variable is introduced where :math:`l_{ij}=x_iL_j`,
 and can be interpreted as a *component* flow rate.
 By formulating the mass balance equations into function of :math:`l_{ij}`
 the system of equations can be converted in to a tridiagonal matrix.
+
+.. include:: component-mass-balances.rst
+
 Computationally, we can perform this step
 using our model by the following:
 

@@ -290,8 +290,11 @@ That is, we need to generate initial guesses for
 <span class="math notranslate nohighlight">\(L_j\)</span>, <span class="math notranslate nohighlight">\(V_j\)</span>, and <span class="math notranslate nohighlight">\(T_j\)</span>.</p>
 <p>First we calculate the feed temperature
 (which is a saturated liquid) using
-a bubble point calculation (see <a class="reference internal" href="bubble.html#bubble"><span class="std std-ref">Bubble Point</span></a>).
-We set the temperatures <span class="math notranslate nohighlight">\(T_j\)</span>
+a bubble point calculation (see <a class="reference internal" href="bubble.html#bubble"><span class="std std-ref">Bubble Point</span></a>).</p>
+<div class="highlight-python: notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; model.calculate_T_feed()
+</pre></div>
+</div>
+<p>We set the temperatures <span class="math notranslate nohighlight">\(T_j\)</span>
 to be the same as the feed temperature.
 This step is performed automatically when the model
 is initialized with input parameters.
@@ -396,8 +399,27 @@ and each stage <span class="math notranslate nohighlight">\(j\)</span>.
 This new variable is introduced where <span class="math notranslate nohighlight">\(l_{ij}=x_iL_j\)</span>,
 and can be interpreted as a <em>component</em> flow rate.
 By formulating the mass balance equations into function of <span class="math notranslate nohighlight">\(l_{ij}\)</span>
-the system of equations can be converted in to a tridiagonal matrix.
-Computationally, we can perform this step
+the system of equations can be converted in to a tridiagonal matrix.</p>
+<p>For a general stage <span class="math notranslate nohighlight">\(j\)</span>,
+the mass balance on component <span class="math notranslate nohighlight">\(i\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[V_jy_{i,j} + L_j x_{i,j} - V_{j+1}y_{i,j+1} - L_{j-1}x_{i,j-1} = F_jz_{i,j}\]</div>
+<p>Using the following relationships</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+    y_{i,j} &amp;= K_jx_{i,j} \\
+    y_{i,j+1} &amp;= K_{j+1}x_{i,j+1} \\
+\end{align}\end{split}\]</div>
+<p>and</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align}
+    x_{i,j} &amp;= \frac{l_{i,j}}{L_j}\\
+    x_{i,j-1} &amp;= \frac{l_{i,j-1}}{L_{j-1}}\\
+\end{align}\end{split}\]</div>
+<p>we obtain</p>
+<div class="math notranslate nohighlight">
+\[-l_{i,j-1} + \left(1 + \frac{V_jK_j}{L_j}\right)l_{i,j} - \left(\frac{V_{j+1}K_{j+1}}{L_{j+1}}\right)l_{i,j+1}=F_jz_{i,j}\]</div>
+<p>Computationally, we can perform this step
 using our model by the following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">model</span><span class="o">.</span><span class="n">components</span><span class="p">:</span>
 <span class="gp">... </span>   <span class="n">model</span><span class="o">.</span><span class="n">solve_component_mass_bal</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
@@ -669,6 +691,24 @@ It is currently set to 0.01.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="distillation.amundson_1958.main.Model.add_parameters">
+<code class="sig-name descname">add_parameters</code><span class="sig-paren">(</span><em class="sig-param">verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.add_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.add_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add thermodynamic parameters for calculation</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>K values from DePriester charts
+CpL from Perrys
+CpV assumes ideal gas
+dH_vap from NIST Webbook</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.calculate_T_feed">
+<code class="sig-name descname">calculate_T_feed</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.calculate_T_feed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.calculate_T_feed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="distillation.amundson_1958.main.Model.flow_rates_converged">
 <code class="sig-name descname">flow_rates_converged</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.flow_rates_converged"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.flow_rates_converged" title="Permalink to this definition">¶</a></dt>
 <dd><p>Determine if flow rates are converged</p>
@@ -676,8 +716,44 @@ It is currently set to 0.01.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="distillation.amundson_1958.main.Model.generate_initial_guess">
-<code class="sig-name descname">generate_initial_guess</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.generate_initial_guess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.generate_initial_guess" title="Permalink to this definition">¶</a></dt>
+<dt id="distillation.amundson_1958.main.Model.h_feed_rule">
+<code class="sig-name descname">h_feed_rule</code><span class="sig-paren">(</span><em class="sig-param">stage</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.h_feed_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.h_feed_rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enthalpy of liquid in feed mixture
+Calculated for ideal mixture</p>
+<div class="math notranslate nohighlight">
+\[h = \sum_i x_{ij}h^*_i(T_j)\]</div>
+<p>where the asterisk indicates the pure component enthalpy</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><span class="math notranslate nohighlight">\(h\)</span> [J/kmol]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.h_j_rule">
+<code class="sig-name descname">h_j_rule</code><span class="sig-paren">(</span><em class="sig-param">stage</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.h_j_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.h_j_rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enthalpy of liquid on stage <em>j</em>.
+Calculated for ideal mixture</p>
+<div class="math notranslate nohighlight">
+\[h_j = \sum_i x_{ij}h^*_i(T_j)\]</div>
+<p>where the asterisk indicates the pure component enthalpy</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><span class="math notranslate nohighlight">\(h_j\)</span> [J/kmol]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.h_pure_rule">
+<code class="sig-name descname">h_pure_rule</code><span class="sig-paren">(</span><em class="sig-param">c</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.h_pure_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.h_pure_rule" title="Permalink to this definition">¶</a></dt>
+<dd><p>rule for liquid enthalpy of pure component</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="distillation.amundson_1958.main.Model.initialize_flow_rates">
+<code class="sig-name descname">initialize_flow_rates</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.initialize_flow_rates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.initialize_flow_rates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Before beginning the solution procedure,
 we need to have an initial guess for the liquid flow rates,
 vapor flow rates, and temperatures on each stage <span class="math notranslate nohighlight">\(j\)</span>.
@@ -685,8 +761,11 @@ That is, we need to generate initial guesses for
 <span class="math notranslate nohighlight">\(L_j\)</span>, <span class="math notranslate nohighlight">\(V_j\)</span>, and <span class="math notranslate nohighlight">\(T_j\)</span>.</p>
 <p>First we calculate the feed temperature
 (which is a saturated liquid) using
-a bubble point calculation (see <a class="reference internal" href="bubble.html#bubble"><span class="std std-ref">Bubble Point</span></a>).
-We set the temperatures <span class="math notranslate nohighlight">\(T_j\)</span>
+a bubble point calculation (see <a class="reference internal" href="bubble.html#bubble"><span class="std std-ref">Bubble Point</span></a>).</p>
+<div class="highlight-python: notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; model.calculate_T_feed()
+</pre></div>
+</div>
+<p>We set the temperatures <span class="math notranslate nohighlight">\(T_j\)</span>
 to be the same as the feed temperature.
 This step is performed automatically when the model
 is initialized with input parameters.
@@ -744,42 +823,6 @@ We note that <code class="code docutils literal notranslate"><span class="pre">V
 which arises from the mass balance at the top of the column.
 Similarly, we also realize that
 <code class="code docutils literal notranslate"><span class="pre">V[3]</span> <span class="pre">=</span> <span class="pre">model.L[2]</span> <span class="pre">-</span> <span class="pre">model.B</span></code>.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="distillation.amundson_1958.main.Model.h_feed_rule">
-<code class="sig-name descname">h_feed_rule</code><span class="sig-paren">(</span><em class="sig-param">stage</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.h_feed_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.h_feed_rule" title="Permalink to this definition">¶</a></dt>
-<dd><p>Enthalpy of liquid in feed mixture
-Calculated for ideal mixture</p>
-<div class="math notranslate nohighlight">
-\[h = \sum_i x_{ij}h^*_i(T_j)\]</div>
-<p>where the asterisk indicates the pure component enthalpy</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><span class="math notranslate nohighlight">\(h\)</span> [J/kmol]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="distillation.amundson_1958.main.Model.h_j_rule">
-<code class="sig-name descname">h_j_rule</code><span class="sig-paren">(</span><em class="sig-param">stage</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.h_j_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.h_j_rule" title="Permalink to this definition">¶</a></dt>
-<dd><p>Enthalpy of liquid on stage <em>j</em>.
-Calculated for ideal mixture</p>
-<div class="math notranslate nohighlight">
-\[h_j = \sum_i x_{ij}h^*_i(T_j)\]</div>
-<p>where the asterisk indicates the pure component enthalpy</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p><span class="math notranslate nohighlight">\(h_j\)</span> [J/kmol]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="distillation.amundson_1958.main.Model.h_pure_rule">
-<code class="sig-name descname">h_pure_rule</code><span class="sig-paren">(</span><em class="sig-param">c</em>, <em class="sig-param">T</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/distillation/amundson_1958/main.html#Model.h_pure_rule"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#distillation.amundson_1958.main.Model.h_pure_rule" title="Permalink to this definition">¶</a></dt>
-<dd><p>rule for liquid enthalpy of pure component</p>
 </dd></dl>
 
 <dl class="method">

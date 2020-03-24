@@ -155,9 +155,13 @@
   <h1>Source code for distillation.equilibrium_data.heat_capacity_vapor</h1><div class="highlight"><pre>
 <div class="viewcode-block" id="CpV"><a class="viewcode-back" href="../../../modules.html#distillation.equilibrium_data.heat_capacity_vapor.CpV">[docs]</a><span></span><span class="k">class</span> <span class="nc">CpV</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Heat capacities of vapor&quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compound_name</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">compound_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mf">4.</span><span class="o">*</span><span class="mf">8.314</span><span class="o">*</span><span class="mf">1000.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s1">&#39;J/kmol/K&#39;</span>
+
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Setting heat capacity for </span><span class="si">%s</span><span class="s1"> to be 4R (ideal polyatomic gas)&#39;</span> <span class="o">%</span> <span class="n">compound_name</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
