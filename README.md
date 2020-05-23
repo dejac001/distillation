@@ -1,5 +1,9 @@
 Distillation
 ============
+[![DOI](https://zenodo.org/badge/247743070.svg)](https://zenodo.org/badge/latestdoi/247743070)
+
+An educational tool for learning about multicomponent distillation.
+
 Perform a calculation for distillation of mixtures
 of chemical compounds.
 
