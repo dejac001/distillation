@@ -23,5 +23,5 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
-    install_requires=["numpy==1.18.1","scipy == 1.4.1"]
+    install_requires=["numpy==1.18.1","scipy == 1.10.0"]
 )
